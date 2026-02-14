@@ -6,8 +6,8 @@
   - ログインなしでブラウザのローカル保存により、同一端末・同一ブラウザ内で入力内容を保持する。
 - 成功条件（MVPの合格基準）
   - スマホUI最優先で、以下が一通り動作する。
-    1) コンペ（1大会）を作成し、課題を追加して「難易度・トライ回数・完登・完登までのトライ数」を記録できる
-    2) のぼコンボード（ON/OFF、全て選択）を入力できる
+    1) コンペ（1大会）を作成し、課題を追加して「難易度・トライ回数・完登」を記録できる
+    2) のぼコンボード（完登/未完登、トライ数、全て完登/未完登）を入力できる
     3) スコア表示で「合計ポイント」「ランク」「合計トライ数」「1トライあたりポイント」「完登課題一覧（or 集計）」を確認できる
     4) 入力は自動保存され、ページ再訪時に復元される（localStorage）
     5) スコアを画像（PNG）としてエクスポートできる（SNS共有用）
@@ -29,7 +29,7 @@
 - MVPでやること
   - コンペ作成（ローカル）
   - 課題（問題）追加・編集・削除（ローカル）
-  - のぼコンボード入力（全て選択ボタン含む）
+  - のぼコンボード入力（全て完登/未完登ボタン含む）
   - スコア計算・表示（合計ポイント/ランク/指標）
   - 自動保存/復元（localStorage）
   - PNGエクスポート（スコアカード）
@@ -52,18 +52,20 @@
     - 削除（確認ダイアログ必須）
     - 一覧表示（ローカルに存在する大会）
   - 課題（課題ごとの記録）
-    - 追加（label、grade、triesTotal、topped、triesToTop）
+    - 追加（label、grade、triesTotal、topped）
     - 編集（編集モードのみ）
     - 削除（確認ダイアログ必須）
   - のぼコンボード
-    - 8Q(91)〜2Q(98) のON/OFF
-    - 全て選択ボタン（全ON/全OFFトグル）
+    - 8Q(91)〜2Q(98) の完登/未完登
+    - 各ボードのトライ数（±）
+    - 全て完登/未完登ボタン
   - スコア表示
     - 合計ポイント（級・段＋ボード）
     - ランク
     - 合計トライ数
     - 1トライあたりポイント
-    - 完登課題一覧（課題label/grade/triesToTopを表示）または grade別完登数集計
+    - 完登課題一覧（課題label/grade/獲得ポイントを表示）または grade別完登数集計
+    - のぼコンボード合計（ポイント/トライ数）
   - 自動保存/復元
     - 編集のたびにlocalStorageへ保存
     - 初期表示で復元
@@ -73,7 +75,6 @@
   - 入力UX
     - triesTotal の±ボタン（長押し連打対応はPhase2）
     - topped のトグル
-    - topped=true時に triesToTop 入力欄を表示（必須）
   - バックアップ
     - JSONエクスポート/インポート（UIボタン）
 - Could
@@ -81,19 +82,20 @@
   - スコアカードのテンプレ切替
 
 ### 4.2 入力/出力/例外（エラー時の挙動）
-- 課題入力
-  - 入力:
-    - label: 空文字不可
+  - 課題入力
+    - 入力:
+    - label: 空文字不可（数値入力を想定）
     - grade: enum（2D,1D,1Q,2Q,3Q,4Q,5Q,6Q,7Q,8Q）
     - triesTotal: 0以上の整数
-    - topped: boolean
-    - triesToTop: topped=true のときのみ 1以上 triesTotal 以下（topped=false のとき null）
+    - topped: boolean（完登時は triesTotal が0なら1に補正）
+    - triesToTop: topped=true のときのみ 1以上 triesTotal 以下（内部保持。UI入力なし）
   - 例外:
     - triesTotal < 0: 保存不可、フィールド下にエラー表示
-    - topped=true で triesToTop未入力: 保存不可、エラー表示
+    - topped=true で triesToTop未入力: 保存不可、エラー表示（内部補正）
     - triesToTop > triesTotal: 保存不可、エラー表示
 - スコア
   - totalTries=0 の場合、1トライあたりポイントは0表示（0除算禁止）
+  - totalTries は「課題トライ + のぼコンボードトライ（完登のみ）」の合算
 - ローカル保存
   - localStorageが利用不可（プライベートモード等）: 画面上部に警告バナーを表示し、保存が保証できない旨を明示
 
@@ -117,7 +119,8 @@
 - コンペ詳細（タブUI）
   - 共通ヘッダー: 大会名、戻る、編集ボタン（閲覧→編集切替）
   - タブ1 課題一覧
-    - 要素: 課題リスト（label、grade、triesTotal、topped、triesToTop）
+    - 要素: 課題リスト（label、grade、triesTotal、topped）
+    - のぼコンボード入力（完登/未完登、トライ数、全て完登/未完登）
     - 追加: 「＋課題追加」（下部シート/モーダル）
     - 編集モード:
       - 各行に編集/削除
@@ -128,7 +131,7 @@
       - 合計トライ数
       - 1トライあたりポイント（小数第2位まで）
       - 完登課題一覧（topped=trueのみ表示）または grade別完登数テーブル
-      - のぼコンボード（トグル群＋全て選択）
+      - のぼコンボード合計（ポイント/トライ数）
       - 「画像として保存」ボタン（PNG）
       - （Should）「JSON書き出し」「JSON読み込み」ボタン
 
@@ -137,7 +140,7 @@
   1. / で「＋新規作成」
   2. 大会名を入力して保存
   3. タブ1で課題を追加し、トライ/完登を入力
-  4. タブ2でスコアを確認し、ボードをON/OFF
+  4. タブ2でスコアを確認する（ボードはタブ1で入力）
   5. 「画像として保存」でPNG生成
 2) 端末内で再訪
   1. / で作成済み大会が一覧表示される
@@ -156,6 +159,7 @@
   - eventDate: YYYY-MM-DD string
   - problems: ProblemAttempt[]
   - boardStates: BoardStates
+  - boardTries: BoardTries
   - createdAt, updatedAt: ISO string
 - ProblemAttempt
   - id: string（uuid）
@@ -174,6 +178,15 @@
   - "3Q-96": boolean
   - "3Q-97": boolean
   - "2Q-98": boolean
+- BoardTries
+  - "8Q-91": number
+  - "7Q-92": number
+  - "6Q-93": number
+  - "5Q-94": number
+  - "4Q-95": number
+  - "3Q-96": number
+  - "3Q-97": number
+  - "2Q-98": number
 
 ### 6.2 JSON例
 ```json
@@ -218,6 +231,16 @@
         "3Q-96": true,
         "3Q-97": false,
         "2Q-98": false
+      },
+      "boardTries": {
+        "8Q-91": 1,
+        "7Q-92": 0,
+        "6Q-93": 2,
+        "5Q-94": 0,
+        "4Q-95": 0,
+        "3Q-96": 1,
+        "3Q-97": 0,
+        "2Q-98": 0
       }
     }
   ]
@@ -228,7 +251,7 @@
 - Competition.title: 1文字以上必須
 - ProblemAttempt.label: 1文字以上必須
 - triesTotal: 0以上の整数
-- topped=true の場合 triesToTop 必須、1以上 triesTotal 以下
+- topped=true の場合 triesToTop 必須、1以上 triesTotal 以下（内部補正で保持）
 - grade: 定義済み enum のみ
 - 破損データ復旧
   - JSON読み込み時にスキーマ検証し、不正なら読み込み拒否＆理由表示
@@ -345,11 +368,11 @@
 - 級・段合計
   - Σ(gradePoints[grade] * toppedCount[grade])
 
-### B) のぼコンボード（ONなら加点）
+### B) のぼコンボード（完登なら加点）
 - 点数表
   - 8Q(91):100, 7Q(92):200, 6Q(93):300, 5Q(94):400, 4Q(95):500, 3Q(96):650, 3Q(97):650, 2Q(98):1050
 - ボード合計
-  - ONの項目のみ点数を加算
+  - 完登の項目のみ点数を加算
 
 ### C) 合計点
 - totalPoints = gradeTotalPoints + boardTotalPoints
@@ -370,7 +393,7 @@
 - 40000〜: アルティメット
 
 ### E) 合計トライ数
-- totalTries = Σ(triesTotal)
+- totalTries = Σ(triesTotal) + Σ(boardTries[完登のみ])
 
 ### F) 1トライあたりポイント
 - pointsPerTry = (totalTries === 0) ? 0 : totalPoints / totalTries
