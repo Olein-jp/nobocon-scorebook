@@ -9,13 +9,13 @@ export type TabItem = {
 export default function Tabs({ items, activeId, onChange }: { items: TabItem[]; activeId: string; onChange: (id: string) => void }) {
   return (
     <div>
-      <div className="flex gap-2 rounded-2xl bg-white/70 p-1 shadow-card">
+      <div className="flex gap-2 rounded-2xl border border-white/80 bg-white/80 p-1 shadow-card">
         {items.map((item) => (
           <button
             key={item.id}
             type="button"
             className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
-              activeId === item.id ? "bg-ink-900 text-white" : "text-ink-600"
+              activeId === item.id ? "bg-accent-500 text-white" : "text-ink-700 hover:bg-mint-50"
             }`}
             aria-selected={activeId === item.id}
             aria-controls={`tab-panel-${item.id}`}

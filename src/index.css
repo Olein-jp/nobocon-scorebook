@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,7 +10,11 @@
 
 body {
   font-family: "Noto Sans JP", system-ui, sans-serif;
-  background: radial-gradient(circle at top, #fff8ef, #f6f3ef 55%, #f1eee9 100%);
+  color: #1f2937;
+  background:
+    radial-gradient(circle at 10% -10%, #e6f4ed 0%, transparent 45%),
+    radial-gradient(circle at 95% -5%, #d9ebe4 0%, transparent 42%),
+    #c7ddd5;
   min-height: 100vh;
 }
 
@@ -22,6 +28,16 @@ body {
 }
 
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 3px solid rgba(249, 115, 22, 0.5);
+  outline: 3px solid rgba(54, 196, 142, 0.45);
   outline-offset: 2px;
+}
+
+@layer components {
+  .app-shell {
+    @apply rounded-[2rem] border border-white/70 bg-mint-100/85 p-4 shadow-card backdrop-blur-sm;
+  }
+
+  .soft-card {
+    @apply rounded-3xl border border-white/80 bg-white/90 shadow-card;
+  }
 }

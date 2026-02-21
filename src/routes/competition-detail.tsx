@@ -79,8 +79,8 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   if (!competition) {
     return (
       <div className="mx-auto max-w-xl px-4 py-10">
-        <p className="text-sm text-ink-600">大会が見つかりません。</p>
-        <Link className="mt-4 inline-block text-sm text-ink-700 underline" to="/">
+        <p className="text-sm text-ink-700">大会が見つかりません。</p>
+        <Link className="mt-4 inline-block text-sm text-ink-800 underline" to="/">
           一覧へ戻る
         </Link>
       </div>
@@ -165,11 +165,11 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   const problemTab = (
     <div className="mt-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold">課題一覧</h2>
+        <h2 className="text-base font-semibold text-ink-950">課題一覧</h2>
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="rounded-full border border-ink-200 px-3 py-1 text-xs font-semibold"
+            className="rounded-full border border-mint-300 bg-mint-50 px-3 py-1 text-xs font-semibold text-ink-800"
             onClick={() => setProblemEditMode((prev) => !prev)}
           >
             {problemEditMode ? "閲覧モード" : "編集モード"}
@@ -196,40 +196,40 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
       <div className="space-y-3">
         {competition.problems.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-ink-500/30 bg-white/70 p-4 text-sm text-ink-600">
+          <div className="rounded-2xl border border-dashed border-mint-500/60 bg-white/80 p-4 text-sm text-ink-700">
             まだ課題がありません。編集モードで追加してください。
           </div>
         )}
 
         {competition.problems.map((problem) => (
-          <div key={problem.id} className="rounded-3xl border border-white/60 bg-white/80 p-4 shadow-card">
+          <div key={problem.id} className="soft-card p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold">P{problem.label}</p>
-                <p className="text-xs text-ink-500">{problem.grade}</p>
+                <p className="text-sm font-semibold text-ink-900">P{problem.label}</p>
+                <p className="text-xs text-ink-600">{problem.grade}</p>
               </div>
-              <div className="text-right text-xs text-ink-500">
+              <div className="text-right text-xs text-ink-600">
                 <p>{problem.topped ? "完登済み" : "未完登"}</p>
                 <p>獲得ポイント: {problem.topped ? gradePoints[problem.grade] : 0}</p>
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between rounded-2xl border border-ink-200 bg-white px-3 py-2">
+            <div className="mt-3 flex items-center justify-between rounded-2xl border border-mint-300 bg-mint-50 px-3 py-2">
               <div>
-                <p className="text-xs text-ink-500">トライ数</p>
-                <p className="text-lg font-semibold">{problem.triesTotal}</p>
+                <p className="text-xs text-ink-600">トライ数</p>
+                <p className="text-lg font-semibold text-ink-900">{problem.triesTotal}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="h-10 w-10 rounded-full border border-ink-200 text-lg"
+                  className="h-10 w-10 rounded-full border border-mint-300 bg-white text-lg"
                   onClick={() => adjustProblemTries(problem, -1)}
                 >
                   −
                 </button>
                 <button
                   type="button"
-                  className="h-10 w-10 rounded-full border border-ink-200 text-lg"
+                  className="h-10 w-10 rounded-full border border-mint-300 bg-white text-lg"
                   onClick={() => adjustProblemTries(problem, 1)}
                 >
                   ＋
@@ -241,7 +241,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
               <div className="mt-3 flex gap-2">
                 <button
                   type="button"
-                  className="flex-1 rounded-full border border-ink-200 px-3 py-2 text-xs font-semibold"
+                  className="flex-1 rounded-full border border-mint-300 bg-mint-50 px-3 py-2 text-xs font-semibold text-ink-800"
                   onClick={() => handleEditProblem(problem)}
                 >
                   編集
@@ -265,19 +265,19 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
     <div className="mt-6 space-y-4">
       {summary && <ScoreSummary summary={summary} />}
       {summary && (
-        <div className="rounded-3xl border border-white/60 bg-white/80 p-4 shadow-card">
-          <p className="text-sm font-semibold">完登課題一覧</p>
+        <div className="soft-card p-4">
+          <p className="text-sm font-semibold text-ink-900">完登課題一覧</p>
           {summary.toppedProblems.length === 0 ? (
-            <p className="mt-2 text-sm text-ink-500">完登課題がまだありません。</p>
+            <p className="mt-2 text-sm text-ink-600">完登課題がまだありません。</p>
           ) : (
             <div className="mt-3 space-y-2 text-sm">
               {summary.toppedProblems.map((problem) => (
-                <div key={problem.id} className="flex items-center justify-between rounded-xl bg-ink-50 px-3 py-2">
+                <div key={problem.id} className="flex items-center justify-between rounded-xl border border-mint-300 bg-mint-50 px-3 py-2">
                   <div>
                     <p className="font-semibold">P{problem.label}</p>
-                    <p className="text-xs text-ink-500">{problem.grade}</p>
+                    <p className="text-xs text-ink-600">{problem.grade}</p>
                   </div>
-                  <p className="text-xs text-ink-500">+{gradePoints[problem.grade]}pt</p>
+                  <p className="text-xs text-ink-600">+{gradePoints[problem.grade]}pt</p>
                 </div>
               ))}
             </div>
@@ -285,15 +285,15 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
         </div>
       )}
 
-      <div className="rounded-3xl border border-white/60 bg-white/80 p-4 shadow-card">
+      <div className="soft-card p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold">スコアカード</p>
-            <p className="text-xs text-ink-500">PNGとして保存できます。</p>
+            <p className="text-sm font-semibold text-ink-900">スコアカード</p>
+            <p className="text-xs text-ink-600">PNGとして保存できます。</p>
           </div>
           <button
             type="button"
-            className="rounded-full bg-ink-900 px-3 py-2 text-xs font-semibold text-white"
+            className="rounded-full bg-accent-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
             onClick={handleExportPng}
           >
             画像として保存
@@ -306,17 +306,17 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
         )}
       </div>
 
-      <div className="rounded-3xl border border-white/60 bg-white/80 p-4 shadow-card">
-        <p className="text-sm font-semibold">バックアップ</p>
+      <div className="soft-card p-4">
+        <p className="text-sm font-semibold text-ink-900">バックアップ</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
-            className="rounded-full border border-ink-200 px-3 py-2 text-xs font-semibold"
+            className="rounded-full border border-mint-300 bg-mint-50 px-3 py-2 text-xs font-semibold text-ink-800"
             onClick={() => downloadJson(state)}
           >
             JSON書き出し
           </button>
-          <label className="rounded-full border border-ink-200 px-3 py-2 text-xs font-semibold cursor-pointer">
+          <label className="cursor-pointer rounded-full border border-mint-300 bg-mint-50 px-3 py-2 text-xs font-semibold text-ink-800">
             JSON読み込み
             <input type="file" accept="application/json" className="hidden" onChange={handleImportJson} />
           </label>
@@ -328,86 +328,88 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
   return (
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-6">
-      <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div>
-          <Link to="/" className="text-xs uppercase tracking-[0.4em] text-ink-500">
-            ← 一覧へ戻る
-          </Link>
-          {metaEditMode ? (
-            <div className="mt-2 space-y-2">
-              <input
-                className="w-full rounded-xl border border-ink-200 px-3 py-2 text-base"
-                value={metaTitle}
-                onChange={(event) => setMetaTitle(event.target.value)}
-              />
-              <input
-                type="date"
-                className="w-full rounded-xl border border-ink-200 px-3 py-2 text-base"
-                value={metaDate}
-                onChange={(event) => setMetaDate(event.target.value)}
-              />
-              {metaErrors.title && (
-                <p className="text-sm text-red-600" aria-live="polite">{metaErrors.title}</p>
-              )}
-            </div>
-          ) : (
-            <div className="mt-2">
-              <h1 className="font-display text-2xl">{competition.title}</h1>
-              <p className="text-sm text-ink-500">{competition.eventDate || "日付未設定"}</p>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {metaEditMode ? (
-            <>
+      <div className="app-shell">
+        <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <Link to="/" className="text-xs uppercase tracking-[0.35em] text-ink-600">
+              ← 一覧へ戻る
+            </Link>
+            {metaEditMode ? (
+              <div className="mt-2 space-y-2">
+                <input
+                  className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                  value={metaTitle}
+                  onChange={(event) => setMetaTitle(event.target.value)}
+                />
+                <input
+                  type="date"
+                  className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                  value={metaDate}
+                  onChange={(event) => setMetaDate(event.target.value)}
+                />
+                {metaErrors.title && (
+                  <p className="text-sm text-red-600" aria-live="polite">{metaErrors.title}</p>
+                )}
+              </div>
+            ) : (
+              <div className="mt-2">
+                <h1 className="font-display text-2xl text-ink-950">{competition.title}</h1>
+                <p className="text-sm text-ink-600">{competition.eventDate || "日付未設定"}</p>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {metaEditMode ? (
+              <>
+                <button
+                  type="button"
+                  className="rounded-full border border-mint-300 bg-mint-50 px-4 py-2 text-xs font-semibold text-ink-800"
+                  onClick={() => setMetaEditMode(false)}
+                >
+                  キャンセル
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full bg-accent-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
+                  onClick={handleSaveMeta}
+                >
+                  保存
+                </button>
+              </>
+            ) : (
               <button
                 type="button"
-                className="rounded-full border border-ink-200 px-4 py-2 text-xs font-semibold"
-                onClick={() => setMetaEditMode(false)}
+                className="rounded-full border border-mint-300 bg-mint-50 px-4 py-2 text-xs font-semibold text-ink-800"
+                onClick={() => {
+                  setMetaEditMode(true);
+                  setMetaTitle(competition.title);
+                  setMetaDate(competition.eventDate || todayString());
+                }}
               >
-                キャンセル
+                編集
               </button>
-              <button
-                type="button"
-                className="rounded-full bg-ink-900 px-4 py-2 text-xs font-semibold text-white"
-                onClick={handleSaveMeta}
-              >
-                保存
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              className="rounded-full border border-ink-200 px-4 py-2 text-xs font-semibold"
-              onClick={() => {
-                setMetaEditMode(true);
-                setMetaTitle(competition.title);
-                setMetaDate(competition.eventDate || todayString());
-              }}
-            >
-              編集
-            </button>
-          )}
+            )}
+          </div>
+        </header>
+
+        <Tabs
+          items={[
+            { id: "problems", label: "課題", content: problemTab },
+            { id: "score", label: "スコア", content: scoreTab },
+          ]}
+          activeId={activeTab}
+          onChange={setActiveTab}
+        />
+
+        <div className="mt-8">
+          <button
+            type="button"
+            className="w-full rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600"
+            onClick={handleDeleteCompetition}
+          >
+            この大会を削除
+          </button>
         </div>
-      </header>
-
-      <Tabs
-        items={[
-          { id: "problems", label: "課題", content: problemTab },
-          { id: "score", label: "スコア", content: scoreTab },
-        ]}
-        activeId={activeTab}
-        onChange={setActiveTab}
-      />
-
-      <div className="mt-8">
-        <button
-          type="button"
-          className="w-full rounded-2xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-600"
-          onClick={handleDeleteCompetition}
-        >
-          この大会を削除
-        </button>
       </div>
 
       <ProblemEditorSheet
