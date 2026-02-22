@@ -1,5 +1,6 @@
 import { BOARD_KEYS, type BoardStates, type BoardTries } from "../lib/types";
 import { boardPoints } from "../lib/scoring";
+import { Minus, Plus } from "lucide-react";
 
 type Props = {
   states: BoardStates;
@@ -54,15 +55,17 @@ export default function BoardToggleGroup({ states, tries, onToggle, onAdjustTrie
                   type="button"
                   className="h-8 w-8 rounded-full border border-mint-300 bg-mint-100 text-base"
                   onClick={() => onAdjustTries(key, -1)}
+                  aria-label={`${key}のトライ数を減らす`}
                 >
-                  −
+                  <Minus aria-hidden="true" className="mx-auto h-3.5 w-3.5" strokeWidth={2.2} />
                 </button>
                 <button
                   type="button"
                   className="h-8 w-8 rounded-full border border-mint-300 bg-mint-100 text-base"
                   onClick={() => onAdjustTries(key, 1)}
+                  aria-label={`${key}のトライ数を増やす`}
                 >
-                  ＋
+                  <Plus aria-hidden="true" className="mx-auto h-3.5 w-3.5" strokeWidth={2.2} />
                 </button>
               </div>
             </div>

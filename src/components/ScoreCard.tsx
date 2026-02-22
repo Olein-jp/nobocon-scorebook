@@ -44,8 +44,9 @@ const ScoreCard = forwardRef<HTMLDivElement, { competition: Competition; summary
             {summary.toppedProblems.map((problem) => (
               <div key={problem.id} className="flex items-center justify-between rounded-xl border border-mint-300 bg-mint-50 px-3 py-2">
                 <div>
-                  <p className="font-semibold">P{problem.label}</p>
-                  <p className="text-xs text-ink-600">{problem.grade}</p>
+                  <p className="font-semibold">
+                    <span className="text-moss-600">{problem.grade}</span> - {problem.label}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-ink-600">獲得ポイント</p>

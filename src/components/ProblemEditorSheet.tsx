@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Minus, Plus } from "lucide-react";
 import { GRADE_OPTIONS, type ProblemAttempt } from "../lib/types";
 import { validateProblem } from "../lib/validators";
 
@@ -114,8 +115,9 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
               type="button"
               className="h-11 w-11 rounded-full border border-mint-300 bg-mint-50 text-lg"
               onClick={() => setForm((prev) => ({ ...prev, triesTotal: Math.max(0, triesTotal - 1) }))}
+              aria-label="トライ数を減らす"
             >
-              −
+              <Minus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
             </button>
             <input
               type="number"
@@ -128,8 +130,9 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
               type="button"
               className="h-11 w-11 rounded-full border border-mint-300 bg-mint-50 text-lg"
               onClick={() => setForm((prev) => ({ ...prev, triesTotal: triesTotal + 1 }))}
+              aria-label="トライ数を増やす"
             >
-              ＋
+              <Plus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
             </button>
           </div>
           {errors.triesTotal && <p className="text-sm text-red-600" aria-live="polite">{errors.triesTotal}</p>}
