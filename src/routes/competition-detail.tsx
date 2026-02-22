@@ -186,14 +186,6 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
         </div>
       </div>
 
-      <BoardToggleGroup
-        states={competition.boardStates}
-        tries={competition.boardTries}
-        onToggle={(key) => actions.toggleBoard(competition.id, key)}
-        onAdjustTries={(key, delta) => actions.adjustBoardTries(competition.id, key, delta)}
-        onToggleAll={(value) => actions.setBoardAll(competition.id, value)}
-      />
-
       <div className="space-y-3">
         {competition.problems.length === 0 && (
           <div className="rounded-2xl border border-dashed border-mint-500/60 bg-mint-100/70 p-4 text-sm text-ink-700">
@@ -258,6 +250,14 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           </div>
         ))}
       </div>
+
+      <BoardToggleGroup
+        states={competition.boardStates}
+        tries={competition.boardTries}
+        onToggle={(key) => actions.toggleBoard(competition.id, key)}
+        onAdjustTries={(key, delta) => actions.adjustBoardTries(competition.id, key, delta)}
+        onToggleAll={(value) => actions.setBoardAll(competition.id, value)}
+      />
     </div>
   );
 
