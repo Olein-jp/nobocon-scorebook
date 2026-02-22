@@ -16,9 +16,13 @@ export default function HomeRoute({ state }: { state: AppState }) {
         </div>
         <Link
           to="/competitions/new"
-          className="accent-button text-sm"
+          className="accent-button inline-flex items-center gap-2 text-center text-sm leading-tight"
         >
-          ＋ 新規作成
+          <span aria-hidden="true" className="text-base leading-none">＋</span>
+          <span>
+            <span className="block">コンペを</span>
+            <span className="block">新規作成</span>
+          </span>
         </Link>
       </header>
 
