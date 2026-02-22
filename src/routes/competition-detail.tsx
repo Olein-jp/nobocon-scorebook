@@ -7,14 +7,28 @@ import BoardToggleGroup from "../components/BoardToggleGroup";
 import ScoreSummary from "../components/ScoreSummary";
 import ScoreCard from "../components/ScoreCard";
 import { calculateScore, gradePoints } from "../lib/scoring";
-import { BOARD_KEYS, type AppState, type BoardStates, type Competition, type ProblemAttempt } from "../lib/types";
+import {
+  AUTO_TOP_GRADES_BY_CLASS,
+  BOARD_KEYS,
+  GRADE_OPTIONS,
+  PARTICIPATION_CLASSES,
+  type AppState,
+  type AutoTopCounts,
+  type BoardStates,
+  type Competition,
+  type ParticipationClass,
+  type ProblemAttempt,
+} from "../lib/types";
 import { validateCompetition } from "../lib/validators";
 import { exportElementToPng } from "../lib/exportPng";
 
 const todayString = () => new Date().toISOString().slice(0, 10);
 
 type Actions = {
-  updateCompetitionMeta: (id: string, updates: Partial<Pick<Competition, "title" | "eventDate">>) => void;
+  updateCompetitionMeta: (
+    id: string,
+    updates: Partial<Pick<Competition, "title" | "eventDate" | "participationClass" | "autoTopCounts">>
+  ) => void;
   deleteCompetition: (id: string) => void;
   addProblem: (competitionId: string, payload: ProblemFormInput) => void;
   updateProblem: (competitionId: string, problemId: string, payload: Partial<Omit<ProblemAttempt, "id" | "createdAt">>) => void;
@@ -24,6 +38,34 @@ type Actions = {
   setBoardAll: (competitionId: string, value: boolean) => void;
   hydrateState: (nextState: AppState) => void;
 };
+
+const classLabel: Record<ParticipationClass, string> = {
+  general: "一般",
+  advance: "アドバンスクラス",
+  master: "マスタークラス",
+};
+
+const classAutoTopHeadline: Record<Exclude<ParticipationClass, "general">, string> = {
+  advance: "4Q以下",
+  master: "3Q以下",
+};
+
+const defaultAutoTopCounts = (): AutoTopCounts =>
+  GRADE_OPTIONS.reduce((acc, grade) => {
+    acc[grade] = 0;
+    return acc;
+  }, {} as AutoTopCounts);
+
+const normalizeParticipationClass = (value?: string): ParticipationClass => {
+  if (value === "advance" || value === "master") return value;
+  return "general";
+};
+
+const normalizeAutoTopCounts = (counts?: Partial<Record<(typeof GRADE_OPTIONS)[number], number>>): AutoTopCounts =>
+  GRADE_OPTIONS.reduce((acc, grade) => {
+    acc[grade] = Math.max(0, Math.floor(counts?.[grade] ?? 0));
+    return acc;
+  }, {} as AutoTopCounts);
 
 const downloadJson = (data: AppState) => {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -51,6 +93,8 @@ const validateImportState = (data: AppState): string | null => {
 const normalizeImportState = (data: AppState): AppState => {
   const competitions = data.competitions.map((competition) => ({
     ...competition,
+    participationClass: normalizeParticipationClass(competition.participationClass),
+    autoTopCounts: normalizeAutoTopCounts(competition.autoTopCounts ?? defaultAutoTopCounts()),
     boardTries: BOARD_KEYS.reduce((acc, key) => {
       acc[key] = competition.boardTries?.[key] ?? 0;
       return acc;
@@ -69,6 +113,12 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   const [sheetOpen, setSheetOpen] = useState(false);
   const [metaTitle, setMetaTitle] = useState(competition?.title ?? "");
   const [metaDate, setMetaDate] = useState(competition?.eventDate ?? todayString());
+  const [metaParticipationClass, setMetaParticipationClass] = useState<ParticipationClass>(
+    competition?.participationClass ?? "general"
+  );
+  const [metaAutoTopCounts, setMetaAutoTopCounts] = useState<AutoTopCounts>(
+    normalizeAutoTopCounts(competition?.autoTopCounts ?? defaultAutoTopCounts())
+  );
   const [metaErrors, setMetaErrors] = useState<Record<string, string>>({});
   const [importError, setImportError] = useState<string | null>(null);
   const [undoInfo, setUndoInfo] = useState<ProblemAttempt | null>(null);
@@ -76,6 +126,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   const scoreCardRef = useRef<HTMLDivElement>(null);
 
   const summary = useMemo(() => (competition ? calculateScore(competition) : null), [competition]);
+  const metaAutoTopGrades = AUTO_TOP_GRADES_BY_CLASS[metaParticipationClass];
 
   if (!competition) {
     return (
@@ -92,9 +143,16 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
     const validation = validateCompetition({ title: metaTitle });
     setMetaErrors(validation);
     if (Object.keys(validation).length > 0) return;
+    const allowedGrades = new Set(AUTO_TOP_GRADES_BY_CLASS[metaParticipationClass]);
+    const normalizedCounts = GRADE_OPTIONS.reduce((acc, grade) => {
+      acc[grade] = allowedGrades.has(grade) ? Math.max(0, Math.floor(metaAutoTopCounts[grade] ?? 0)) : 0;
+      return acc;
+    }, {} as AutoTopCounts);
     actions.updateCompetitionMeta(competition.id, {
       title: metaTitle.trim(),
       eventDate: metaDate,
+      participationClass: metaParticipationClass,
+      autoTopCounts: normalizedCounts,
     });
     setMetaEditMode(false);
   };
@@ -136,6 +194,13 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
       triesTotal: nextTries,
       triesToTop: problem.topped ? nextTries : null,
     });
+  };
+
+  const adjustMetaAutoTopCount = (grade: (typeof GRADE_OPTIONS)[number], delta: number) => {
+    setMetaAutoTopCounts((prev) => ({
+      ...prev,
+      [grade]: Math.max(0, (prev[grade] ?? 0) + delta),
+    }));
   };
 
   const toggleProblemTopped = (problem: ProblemAttempt) => {
@@ -193,12 +258,21 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   const problemTab = (
     <div className="mt-6 space-y-4">
       {summary && summary.totalPoints > 0 && (
-        <div className="rounded-2xl border border-mint-300/70 bg-mint-100/80 px-4 py-2 text-center text-xs font-semibold text-ink-700">
-          今のスコア（{summary.totalPoints}pt）ならランク
-          <span className="mx-1 text-moss-600" style={{ fontSize: "150%" }}>
-            {summary.rank}
-          </span>
-          獲得
+        <div className="space-y-2">
+          <div className="rounded-2xl border border-mint-300/70 bg-mint-100/80 px-4 py-2 text-center text-xs font-semibold text-ink-700">
+            今のスコア（{summary.totalPoints}pt）ならランク
+            <span className="mx-1 text-moss-600" style={{ fontSize: "150%" }}>
+              {summary.rank}
+            </span>
+            獲得
+          </div>
+          {competition.participationClass !== "general" && summary.autoTopPointsTotal > 0 && (
+            <p className="rounded-2xl border border-mint-300/70 bg-mint-50 px-4 py-2 text-center text-xs text-ink-700">
+              {classLabel[competition.participationClass]}で参加しているため、
+              {classAutoTopHeadline[competition.participationClass]}を全完したポイント（{summary.autoTopPointsTotal}pt）が
+              すでに追加されています。
+            </p>
+          )}
         </div>
       )}
       <div className="flex items-center justify-between">
@@ -395,6 +469,56 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
                 value={metaDate}
                 onChange={(event) => setMetaDate(event.target.value)}
               />
+              <div className="rounded-2xl border border-mint-300 bg-mint-50 p-3">
+                <p className="text-xs font-semibold text-ink-700">参加枠</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                  {PARTICIPATION_CLASSES.map((cls) => (
+                    <button
+                      key={cls}
+                      type="button"
+                      className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+                        metaParticipationClass === cls
+                          ? "border-accent-500 bg-accent-500 text-night"
+                          : "border-mint-300 bg-mint-100 text-ink-800"
+                      }`}
+                      onClick={() => setMetaParticipationClass(cls)}
+                      aria-pressed={metaParticipationClass === cls}
+                    >
+                      {classLabel[cls]}
+                    </button>
+                  ))}
+                </div>
+                {metaAutoTopGrades.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {metaAutoTopGrades.map((grade) => (
+                      <div key={grade} className="flex items-center justify-between rounded-xl border border-mint-300 bg-mint-100 px-3 py-2">
+                        <p className="text-sm font-semibold text-ink-900">{grade}</p>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            className="h-8 w-8 rounded-full border border-mint-300 bg-mint-50 text-base"
+                            onClick={() => adjustMetaAutoTopCount(grade, -1)}
+                            aria-label={`${grade}の課題数を減らす`}
+                          >
+                            -
+                          </button>
+                          <p className="w-10 text-center text-base font-semibold text-ink-900">
+                            {metaAutoTopCounts[grade]}
+                          </p>
+                          <button
+                            type="button"
+                            className="h-8 w-8 rounded-full border border-mint-300 bg-mint-50 text-base"
+                            onClick={() => adjustMetaAutoTopCount(grade, 1)}
+                            aria-label={`${grade}の課題数を増やす`}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               {metaErrors.title && (
                 <p className="text-sm text-red-600" aria-live="polite">{metaErrors.title}</p>
               )}
@@ -403,6 +527,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
             <div className="mt-2">
               <h1 className="font-display text-2xl text-ink-950">{competition.title}</h1>
               <p className="text-sm text-ink-600">{competition.eventDate || "日付未設定"}</p>
+              <p className="mt-1 text-xs text-ink-600">参加枠: {classLabel[competition.participationClass]}</p>
             </div>
           )}
         </div>
@@ -432,6 +557,8 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
                 setMetaEditMode(true);
                 setMetaTitle(competition.title);
                 setMetaDate(competition.eventDate || todayString());
+                setMetaParticipationClass(competition.participationClass);
+                setMetaAutoTopCounts(normalizeAutoTopCounts(competition.autoTopCounts));
               }}
             >
               編集

@@ -27,7 +27,7 @@ export default function ScoreSummary({ summary }: { summary: ScoreSummary }) {
         <div className="rounded-2xl border border-mint-300 bg-mint-50 px-4 py-3">
           <p className="text-xs text-ink-600">課題ポイント</p>
           <p className="mt-2 text-lg font-semibold">+{formatNumber(summary.gradePointsTotal)}pt</p>
-          <p className="text-xs text-ink-600">完登数: {summary.toppedProblems.length}</p>
+          <p className="text-xs text-ink-600">完登数: {summary.totalToppedCount}</p>
         </div>
       </div>
     </div>
