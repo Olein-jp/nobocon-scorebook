@@ -61,6 +61,7 @@ export type ScoreSummary = {
   gradeTotals: Record<Grade, number>;
   autoTopGradeTotals: Record<Grade, number>;
   autoTopPointsTotal: number;
+  problemPointsTotal: number;
   gradePointsTotal: number;
   boardPointsTotal: number;
   boardTriesTotal: number;

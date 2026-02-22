@@ -78,6 +78,10 @@ export const calculateScore = (competition: Competition): ScoreSummary => {
     return sum + autoTopGradeTotals[grade] * gradePoints[grade];
   }, 0);
 
+  const problemPointsTotal = toppedProblems.reduce((sum, problem) => {
+    return sum + gradePoints[problem.grade];
+  }, 0);
+
   const gradePointsTotal = GRADE_OPTIONS.reduce((sum, grade) => {
     return sum + gradeTotals[grade] * gradePoints[grade];
   }, 0);
@@ -94,12 +98,14 @@ export const calculateScore = (competition: Competition): ScoreSummary => {
   const totalPoints = gradePointsTotal + boardPointsTotal;
   const totalTries =
     competition.problems.reduce((sum, problem) => sum + problem.triesTotal, 0) + boardTriesTotal;
-  const pointsPerTry = totalTries === 0 ? 0 : totalPoints / totalTries;
+  const pointsPerTryBase = totalPoints - autoTopPointsTotal;
+  const pointsPerTry = totalTries === 0 ? 0 : pointsPerTryBase / totalTries;
 
   return {
     gradeTotals,
     autoTopGradeTotals,
     autoTopPointsTotal,
+    problemPointsTotal,
     gradePointsTotal,
     boardPointsTotal,
     boardTriesTotal,

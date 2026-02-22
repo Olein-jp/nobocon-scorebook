@@ -20,14 +20,19 @@ export default function ScoreSummary({ summary }: { summary: ScoreSummary }) {
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl border border-mint-300 bg-mint-50 px-4 py-3">
+          <p className="text-xs text-ink-600">課題ポイント</p>
+          <p className="mt-2 text-lg font-semibold">+{formatNumber(summary.problemPointsTotal)}pt</p>
+          <p className="text-xs text-ink-600">完登数: {summary.toppedProblems.length}</p>
+        </div>
+        <div className="rounded-2xl border border-mint-300 bg-mint-50 px-4 py-3">
+          <p className="text-xs text-ink-600">事前完登扱いポイント</p>
+          <p className="mt-2 text-lg font-semibold">+{formatNumber(summary.autoTopPointsTotal)}pt</p>
+          <p className="text-xs text-ink-600">参加クラスによる加点</p>
+        </div>
+        <div className="rounded-2xl border border-mint-300 bg-mint-50 px-4 py-3">
           <p className="text-xs text-ink-600">のぼコンボード</p>
           <p className="mt-2 text-lg font-semibold">+{formatNumber(summary.boardPointsTotal)}pt</p>
           <p className="text-xs text-ink-600">トライ数: {formatNumber(summary.boardTriesTotal)}</p>
-        </div>
-        <div className="rounded-2xl border border-mint-300 bg-mint-50 px-4 py-3">
-          <p className="text-xs text-ink-600">課題ポイント</p>
-          <p className="mt-2 text-lg font-semibold">+{formatNumber(summary.gradePointsTotal)}pt</p>
-          <p className="text-xs text-ink-600">完登数: {summary.totalToppedCount}</p>
         </div>
       </div>
     </div>
