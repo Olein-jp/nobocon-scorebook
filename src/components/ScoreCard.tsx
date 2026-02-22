@@ -3,6 +3,12 @@ import type { Competition, ScoreSummary } from "../lib/types";
 import { gradePoints } from "../lib/scoring";
 
 const formatNumber = (value: number) => new Intl.NumberFormat("ja-JP").format(value);
+const formatEventDate = (value: string) => {
+  if (!value) return "日付未設定";
+  const [year, month, day] = value.split("-");
+  if (!year || !month || !day) return value;
+  return `${year}年${Number(month)}月${Number(day)}日`;
+};
 const classLabel = {
   general: "一般",
   advance: "アドバンスクラス",
@@ -23,7 +29,10 @@ const ScoreCard = forwardRef<HTMLDivElement, { competition: Competition; summary
       <div className="border-b border-mint-300 pb-3">
         <p className="text-xs uppercase tracking-[0.4em] text-ink-600">Nobocon Score</p>
         <h2 className="mt-1 font-display text-2xl text-ink-950">{competition.title}</h2>
-        <p className="text-sm text-ink-600">{competition.eventDate || "日付未設定"}</p>
+        <div className="mt-2 grid grid-cols-2 gap-3 text-sm text-ink-600">
+          <p>{formatEventDate(competition.eventDate)}</p>
+          <p className="text-right">参加枠: {classLabel[competition.participationClass]}</p>
+        </div>
         <div className="mt-3 grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-ink-600">合計ポイント</p>

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Minus, Plus, X } from "lucide-react";
+import { ChevronLeft, Minus, Plus, X } from "lucide-react";
 import Tabs from "../components/Tabs";
 import ProblemEditorSheet, { type ProblemFormInput } from "../components/ProblemEditorSheet";
 import BoardToggleGroup from "../components/BoardToggleGroup";
@@ -453,8 +453,14 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-8">
       <header className="flex flex-col gap-3 border-b border-mint-300/80 pb-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <Link to="/" className="text-xs uppercase tracking-[0.35em] text-ink-600">
-            ← 一覧へ戻る
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink-700 transition hover:text-ink-900"
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-mint-300 bg-mint-50">
+              <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+            </span>
+            <span>一覧へ戻る</span>
           </Link>
           {metaEditMode ? (
             <div className="mt-2 space-y-2">
