@@ -218,16 +218,11 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
         )}
 
         {competition.problems.map((problem) => (
-          <div key={problem.id} className="soft-card relative p-4">
-            <button
-              type="button"
-              className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-400/55 bg-mint-100 text-red-300"
-              onClick={() => handleDeleteProblem(problem.id)}
-              aria-label="課題を削除"
-            >
-              <X aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2} />
-            </button>
-            <div className="flex items-center justify-between pr-8">
+          <div
+            key={problem.id}
+            className={`soft-card p-4 ${problem.topped ? "border-accent-500/70" : ""}`}
+          >
+            <div className="grid gap-3 grid-cols-[1fr_auto_auto] items-center">
               <div>
                 <p className="text-sm font-semibold text-ink-900">
                   <span className="text-moss-600">{problem.grade}</span> - {problem.label}
@@ -236,10 +231,10 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
                   獲得ポイント: {problem.topped ? gradePoints[problem.grade] : 0}
                 </p>
               </div>
-              <div className="flex items-center justify-end gap-2 text-right text-xs text-ink-600">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-ink-600">
                 <button
                   type="button"
-                  className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                  className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
                     problem.topped
                       ? "border-accent-500/80 bg-accent-500 text-night shadow-[0_0_0_2px_rgba(203,255,79,0.18)]"
                       : "border-mint-300 bg-mint-50 text-ink-700"
@@ -251,10 +246,10 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
                 </button>
                 <button
                   type="button"
-                  className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                  className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
                     problem.topped
                       ? "border-mint-300 bg-mint-50 text-ink-700"
-                      : "border-line-soft bg-mint-100 text-ink-600 shadow-[0_0_0_2px_rgba(78,90,112,0.2)]"
+                      : "border-accent-500/70 bg-mint-100 text-ink-600 shadow-[0_0_0_2px_rgba(203,255,79,0.14)]"
                   }`}
                   onClick={() => toggleProblemTopped(problem)}
                   aria-pressed={!problem.topped}
@@ -262,6 +257,14 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
                   未完登
                 </button>
               </div>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-full border border-red-400/55 bg-mint-100 px-3 py-1 text-xs font-semibold text-red-300"
+                onClick={() => handleDeleteProblem(problem.id)}
+                aria-label="課題を削除"
+              >
+                <X aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2} />
+              </button>
             </div>
 
             <div className="mt-3 flex items-center justify-between rounded-2xl border border-mint-300 bg-mint-50 px-3 py-2">
