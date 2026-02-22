@@ -328,88 +328,86 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
   return (
     <div className="mx-auto max-w-5xl px-4 pb-24 pt-6">
-      <div className="app-shell">
-        <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <Link to="/" className="text-xs uppercase tracking-[0.35em] text-ink-600">
-              ← 一覧へ戻る
-            </Link>
-            {metaEditMode ? (
-              <div className="mt-2 space-y-2">
-                <input
-                  className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
-                  value={metaTitle}
-                  onChange={(event) => setMetaTitle(event.target.value)}
-                />
-                <input
-                  type="date"
-                  className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
-                  value={metaDate}
-                  onChange={(event) => setMetaDate(event.target.value)}
-                />
-                {metaErrors.title && (
-                  <p className="text-sm text-red-600" aria-live="polite">{metaErrors.title}</p>
-                )}
-              </div>
-            ) : (
-              <div className="mt-2">
-                <h1 className="font-display text-2xl text-ink-950">{competition.title}</h1>
-                <p className="text-sm text-ink-600">{competition.eventDate || "日付未設定"}</p>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {metaEditMode ? (
-              <>
-                <button
-                  type="button"
-                  className="rounded-full border border-mint-300 bg-mint-50 px-4 py-2 text-xs font-semibold text-ink-800"
-                  onClick={() => setMetaEditMode(false)}
-                >
-                  キャンセル
-                </button>
-                <button
-                  type="button"
-                  className="rounded-full bg-accent-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
-                  onClick={handleSaveMeta}
-                >
-                  保存
-                </button>
-              </>
-            ) : (
+      <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <Link to="/" className="text-xs uppercase tracking-[0.35em] text-ink-600">
+            ← 一覧へ戻る
+          </Link>
+          {metaEditMode ? (
+            <div className="mt-2 space-y-2">
+              <input
+                className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                value={metaTitle}
+                onChange={(event) => setMetaTitle(event.target.value)}
+              />
+              <input
+                type="date"
+                className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                value={metaDate}
+                onChange={(event) => setMetaDate(event.target.value)}
+              />
+              {metaErrors.title && (
+                <p className="text-sm text-red-600" aria-live="polite">{metaErrors.title}</p>
+              )}
+            </div>
+          ) : (
+            <div className="mt-2">
+              <h1 className="font-display text-2xl text-ink-950">{competition.title}</h1>
+              <p className="text-sm text-ink-600">{competition.eventDate || "日付未設定"}</p>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {metaEditMode ? (
+            <>
               <button
                 type="button"
                 className="rounded-full border border-mint-300 bg-mint-50 px-4 py-2 text-xs font-semibold text-ink-800"
-                onClick={() => {
-                  setMetaEditMode(true);
-                  setMetaTitle(competition.title);
-                  setMetaDate(competition.eventDate || todayString());
-                }}
+                onClick={() => setMetaEditMode(false)}
               >
-                編集
+                キャンセル
               </button>
-            )}
-          </div>
-        </header>
-
-        <Tabs
-          items={[
-            { id: "problems", label: "課題", content: problemTab },
-            { id: "score", label: "スコア", content: scoreTab },
-          ]}
-          activeId={activeTab}
-          onChange={setActiveTab}
-        />
-
-        <div className="mt-8">
-          <button
-            type="button"
-            className="w-full rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600"
-            onClick={handleDeleteCompetition}
-          >
-            この大会を削除
-          </button>
+              <button
+                type="button"
+                className="rounded-full bg-accent-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
+                onClick={handleSaveMeta}
+              >
+                保存
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="rounded-full border border-mint-300 bg-mint-50 px-4 py-2 text-xs font-semibold text-ink-800"
+              onClick={() => {
+                setMetaEditMode(true);
+                setMetaTitle(competition.title);
+                setMetaDate(competition.eventDate || todayString());
+              }}
+            >
+              編集
+            </button>
+          )}
         </div>
+      </header>
+
+      <Tabs
+        items={[
+          { id: "problems", label: "課題", content: problemTab },
+          { id: "score", label: "スコア", content: scoreTab },
+        ]}
+        activeId={activeTab}
+        onChange={setActiveTab}
+      />
+
+      <div className="mt-8">
+        <button
+          type="button"
+          className="w-full rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600"
+          onClick={handleDeleteCompetition}
+        >
+          この大会を削除
+        </button>
       </div>
 
       <ProblemEditorSheet

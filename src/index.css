@@ -33,10 +33,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 @layer components {
-  .app-shell {
-    @apply rounded-[2rem] border border-white/70 bg-mint-100/85 p-4 shadow-card backdrop-blur-sm;
-  }
-
   .soft-card {
     @apply rounded-3xl border border-white/80 bg-white/90 shadow-card;
   }
