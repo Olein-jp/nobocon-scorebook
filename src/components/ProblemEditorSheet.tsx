@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Minus, Plus } from "lucide-react";
 import { GRADE_OPTIONS, type ProblemAttempt } from "../lib/types";
 import { validateProblem } from "../lib/validators";
 
@@ -61,8 +62,8 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink-950/45 px-4 pb-6">
-      <div className="w-full max-w-xl rounded-3xl border border-white/80 bg-white p-5 shadow-card">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-night/70 px-4 pb-6 backdrop-blur-sm">
+      <div className="w-full max-w-xl rounded-3xl border border-mint-300/85 bg-mint-100 p-5 shadow-card">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-ink-950">課題を入力</h3>
           <button type="button" className="text-sm text-ink-600" onClick={onClose}>
@@ -78,7 +79,7 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
                 <input
                   type="number"
                   inputMode="numeric"
-                  className="mt-2 w-full rounded-xl border border-mint-300 bg-white px-3 py-2"
+                  className="mt-2 w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2"
                   value={form.label}
                   onChange={(event) => setForm((prev) => ({ ...prev, label: event.target.value }))}
                   placeholder="1"
@@ -93,8 +94,8 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
                       type="button"
                       className={`rounded-xl border px-2 py-2 text-xs font-semibold ${
                         form.grade === grade
-                          ? "border-accent-500 bg-accent-500 text-white"
-                          : "border-mint-300 bg-white text-ink-800"
+                          ? "border-accent-500 bg-accent-500 text-night"
+                          : "border-mint-300 bg-mint-50 text-ink-800"
                       }`}
                       onClick={() => setForm((prev) => ({ ...prev, grade }))}
                     >
@@ -114,12 +115,13 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
               type="button"
               className="h-11 w-11 rounded-full border border-mint-300 bg-mint-50 text-lg"
               onClick={() => setForm((prev) => ({ ...prev, triesTotal: Math.max(0, triesTotal - 1) }))}
+              aria-label="トライ数を減らす"
             >
-              −
+              <Minus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
             </button>
             <input
               type="number"
-              className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2"
+              className="w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2"
               min={0}
               value={triesTotal}
               onChange={(event) => setForm((prev) => ({ ...prev, triesTotal: Number(event.target.value) }))}
@@ -128,8 +130,9 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
               type="button"
               className="h-11 w-11 rounded-full border border-mint-300 bg-mint-50 text-lg"
               onClick={() => setForm((prev) => ({ ...prev, triesTotal: triesTotal + 1 }))}
+              aria-label="トライ数を増やす"
             >
-              ＋
+              <Plus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
             </button>
           </div>
           {errors.triesTotal && <p className="text-sm text-red-600" aria-live="polite">{errors.triesTotal}</p>}
@@ -146,7 +149,7 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
             <button
               type="button"
               className={`rounded-full px-4 py-1 text-sm font-semibold ${
-                form.topped ? "bg-moss-500 text-white" : "bg-white text-ink-700"
+                form.topped ? "bg-moss-500 text-night" : "bg-mint-100 text-ink-700"
               }`}
               aria-pressed={form.topped}
               onClick={() =>
@@ -166,7 +169,7 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
 
         <button
           type="button"
-          className="mt-6 w-full rounded-2xl bg-accent-500 px-4 py-3 text-base font-semibold text-white transition hover:bg-accent-600"
+          className="mt-6 w-full rounded-2xl bg-accent-500 px-4 py-3 text-base font-semibold text-night transition hover:bg-accent-600"
           onClick={handleSave}
         >
           保存

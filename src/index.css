@@ -5,17 +5,36 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+  --color-bg: 8 11 16;
+  --color-bg-glow: 17 24 34;
+  --color-surface-1: 18 23 32;
+  --color-surface-2: 25 31 43;
+  --color-surface-3: 33 40 54;
+  --color-line: 56 66 84;
+  --color-line-soft: 42 51 67;
+  --color-line-strong: 78 90 112;
+  --color-text-strong: 246 248 252;
+  --color-text: 229 235 245;
+  --color-text-soft: 204 214 230;
+  --color-text-muted: 170 183 204;
+  --color-text-faint: 142 157 181;
+  --color-text-subtle: 116 130 153;
+  --color-accent: 203 255 79;
+  --color-accent-strong: 175 238 50;
+  --color-accent-soft: 138 190 58;
 }
 
 body {
   font-family: "Noto Sans JP", system-ui, sans-serif;
-  color: #1f2937;
+  color: rgb(var(--color-text));
   background:
-    radial-gradient(circle at 10% -10%, #e6f4ed 0%, transparent 45%),
-    radial-gradient(circle at 95% -5%, #d9ebe4 0%, transparent 42%),
-    #c7ddd5;
+    radial-gradient(circle at -5% -15%, rgba(var(--color-accent), 0.14) 0%, transparent 40%),
+    radial-gradient(circle at 110% -20%, rgba(var(--color-bg-glow), 0.95) 0%, transparent 46%),
+    radial-gradient(circle at 50% 120%, rgba(var(--color-surface-2), 0.55) 0%, transparent 44%),
+    rgb(var(--color-bg));
   min-height: 100vh;
+  letter-spacing: 0.01em;
 }
 
 ::-webkit-scrollbar {
@@ -23,17 +42,26 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(15, 23, 42, 0.2);
+  background: rgba(var(--color-line-strong), 0.6);
   border-radius: 999px;
 }
 
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 3px solid rgba(54, 196, 142, 0.45);
+  outline: 3px solid rgba(var(--color-accent), 0.5);
   outline-offset: 2px;
+}
+
+input,
+select {
+  color: rgb(var(--color-text-strong));
 }
 
 @layer components {
   .soft-card {
-    @apply rounded-3xl border border-white/80 bg-white/90 shadow-card;
+    @apply rounded-3xl border border-mint-300 bg-mint-100 shadow-card backdrop-blur-sm;
+  }
+
+  .accent-button {
+    @apply rounded-full bg-accent-500 px-4 py-2 font-semibold text-night transition hover:bg-accent-600;
   }
 }

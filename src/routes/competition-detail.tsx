@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeftRight, Minus, Plus } from "lucide-react";
 import Tabs from "../components/Tabs";
 import ProblemEditorSheet, { type ProblemFormInput } from "../components/ProblemEditorSheet";
 import BoardToggleGroup from "../components/BoardToggleGroup";
@@ -169,15 +170,16 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="rounded-full border border-mint-300 bg-mint-50 px-3 py-1 text-xs font-semibold text-ink-800"
+            className="inline-flex items-center gap-1.5 rounded-full border border-mint-300 bg-mint-50 px-3 py-1 text-xs font-semibold text-ink-800"
             onClick={() => setProblemEditMode((prev) => !prev)}
           >
-            {problemEditMode ? "閲覧モード" : "編集モード"}
+            <ArrowLeftRight aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2} />
+            {problemEditMode ? "閲覧へ切替" : "編集へ切替"}
           </button>
           {problemEditMode && (
             <button
               type="button"
-              className="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-white"
+              className="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-night"
               onClick={handleAddProblem}
             >
               ＋ 課題追加
@@ -186,17 +188,9 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
         </div>
       </div>
 
-      <BoardToggleGroup
-        states={competition.boardStates}
-        tries={competition.boardTries}
-        onToggle={(key) => actions.toggleBoard(competition.id, key)}
-        onAdjustTries={(key, delta) => actions.adjustBoardTries(competition.id, key, delta)}
-        onToggleAll={(value) => actions.setBoardAll(competition.id, value)}
-      />
-
       <div className="space-y-3">
         {competition.problems.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-mint-500/60 bg-white/80 p-4 text-sm text-ink-700">
+          <div className="rounded-2xl border border-dashed border-mint-500/60 bg-mint-100/70 p-4 text-sm text-ink-700">
             まだ課題がありません。編集モードで追加してください。
           </div>
         )}
@@ -205,11 +199,20 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           <div key={problem.id} className="soft-card p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-ink-900">P{problem.label}</p>
-                <p className="text-xs text-ink-600">{problem.grade}</p>
+                <p className="text-sm font-semibold text-ink-900">
+                  <span className="text-moss-600">{problem.grade}</span> - {problem.label}
+                </p>
               </div>
               <div className="text-right text-xs text-ink-600">
-                <p>{problem.topped ? "完登済み" : "未完登"}</p>
+                <p
+                  className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
+                    problem.topped
+                      ? "border-accent-500/80 bg-accent-500 text-night"
+                      : "border-mint-300 bg-mint-50 text-ink-700"
+                  }`}
+                >
+                  {problem.topped ? "完登済み" : "未完登"}
+                </p>
                 <p>獲得ポイント: {problem.topped ? gradePoints[problem.grade] : 0}</p>
               </div>
             </div>
@@ -222,17 +225,19 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="h-10 w-10 rounded-full border border-mint-300 bg-white text-lg"
+                  className="h-10 w-10 rounded-full border border-mint-300 bg-mint-100 text-lg"
                   onClick={() => adjustProblemTries(problem, -1)}
+                  aria-label="トライ数を減らす"
                 >
-                  −
+                  <Minus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
                 </button>
                 <button
                   type="button"
-                  className="h-10 w-10 rounded-full border border-mint-300 bg-white text-lg"
+                  className="h-10 w-10 rounded-full border border-mint-300 bg-mint-100 text-lg"
                   onClick={() => adjustProblemTries(problem, 1)}
+                  aria-label="トライ数を増やす"
                 >
-                  ＋
+                  <Plus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -258,6 +263,14 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           </div>
         ))}
       </div>
+
+      <BoardToggleGroup
+        states={competition.boardStates}
+        tries={competition.boardTries}
+        onToggle={(key) => actions.toggleBoard(competition.id, key)}
+        onAdjustTries={(key, delta) => actions.adjustBoardTries(competition.id, key, delta)}
+        onToggleAll={(value) => actions.setBoardAll(competition.id, value)}
+      />
     </div>
   );
 
@@ -274,8 +287,9 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
               {summary.toppedProblems.map((problem) => (
                 <div key={problem.id} className="flex items-center justify-between rounded-xl border border-mint-300 bg-mint-50 px-3 py-2">
                   <div>
-                    <p className="font-semibold">P{problem.label}</p>
-                    <p className="text-xs text-ink-600">{problem.grade}</p>
+                    <p className="font-semibold">
+                      <span className="text-moss-600">{problem.grade}</span> - {problem.label}
+                    </p>
                   </div>
                   <p className="text-xs text-ink-600">+{gradePoints[problem.grade]}pt</p>
                 </div>
@@ -293,7 +307,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           </div>
           <button
             type="button"
-            className="rounded-full bg-accent-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
+            className="rounded-full bg-accent-500 px-3 py-2 text-xs font-semibold text-night transition hover:bg-accent-600"
             onClick={handleExportPng}
           >
             画像として保存
@@ -327,8 +341,8 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-24 pt-6">
-      <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="mx-auto max-w-5xl px-4 pb-24 pt-8">
+      <header className="flex flex-col gap-3 border-b border-mint-300/80 pb-4 md:flex-row md:items-center md:justify-between">
         <div>
           <Link to="/" className="text-xs uppercase tracking-[0.35em] text-ink-600">
             ← 一覧へ戻る
@@ -336,13 +350,13 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           {metaEditMode ? (
             <div className="mt-2 space-y-2">
               <input
-                className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                className="w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2 text-base"
                 value={metaTitle}
                 onChange={(event) => setMetaTitle(event.target.value)}
               />
               <input
                 type="date"
-                className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                className="w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2 text-base"
                 value={metaDate}
                 onChange={(event) => setMetaDate(event.target.value)}
               />
@@ -369,7 +383,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
               </button>
               <button
                 type="button"
-                className="rounded-full bg-accent-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
+                className="rounded-full bg-accent-500 px-4 py-2 text-xs font-semibold text-night transition hover:bg-accent-600"
                 onClick={handleSaveMeta}
               >
                 保存
@@ -403,7 +417,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
       <div className="mt-8">
         <button
           type="button"
-          className="w-full rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600"
+          className="w-full rounded-2xl border border-red-400/55 bg-mint-100 px-4 py-3 text-sm font-semibold text-red-300"
           onClick={handleDeleteCompetition}
         >
           この大会を削除

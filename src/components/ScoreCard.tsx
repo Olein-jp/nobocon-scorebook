@@ -8,7 +8,7 @@ const ScoreCard = forwardRef<HTMLDivElement, { competition: Competition; summary
   return (
     <div
       ref={ref}
-      className="rounded-3xl border border-white/80 bg-white p-6 shadow-card"
+      className="rounded-3xl border border-mint-300/85 bg-mint-100 p-6 shadow-card"
       style={{ minWidth: "320px" }}
     >
       <div className="flex items-center justify-between">
@@ -25,7 +25,7 @@ const ScoreCard = forwardRef<HTMLDivElement, { competition: Competition; summary
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-accent-500 px-3 py-2 text-white">
+        <div className="rounded-2xl bg-accent-500 px-3 py-2 text-night">
           <p className="text-xs">合計トライ</p>
           <p className="text-xl font-bold">{formatNumber(summary.totalTries)}</p>
         </div>
@@ -44,8 +44,9 @@ const ScoreCard = forwardRef<HTMLDivElement, { competition: Competition; summary
             {summary.toppedProblems.map((problem) => (
               <div key={problem.id} className="flex items-center justify-between rounded-xl border border-mint-300 bg-mint-50 px-3 py-2">
                 <div>
-                  <p className="font-semibold">P{problem.label}</p>
-                  <p className="text-xs text-ink-600">{problem.grade}</p>
+                  <p className="font-semibold">
+                    <span className="text-moss-600">{problem.grade}</span> - {problem.label}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-ink-600">獲得ポイント</p>

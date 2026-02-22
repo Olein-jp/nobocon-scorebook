@@ -6,7 +6,7 @@ export default function ScoreSummary({ summary }: { summary: ScoreSummary }) {
   return (
     <div className="soft-card p-4">
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-2xl bg-accent-500 px-4 py-3 text-white">
+        <div className="rounded-2xl bg-accent-500 px-4 py-3 text-night">
           <p className="text-xs uppercase tracking-[0.4em]">Total</p>
           <p className="mt-2 text-3xl font-bold">{formatNumber(summary.totalPoints)}</p>
           <p className="text-sm">ランク: {summary.rank}</p>

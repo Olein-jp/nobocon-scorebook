@@ -245,7 +245,7 @@ function App() {
   return (
     <div className="min-h-screen">
       {!storageAvailable && (
-        <div className="sticky top-0 z-40 bg-amber-200 text-amber-900 text-sm px-4 py-2">
+        <div className="sticky top-0 z-40 border-b border-amber-300/70 bg-amber-200/95 px-4 py-2 text-sm text-amber-950">
           localStorageが利用できません。入力内容は保存されない可能性があります。
         </div>
       )}

@@ -1,5 +1,6 @@
 import { BOARD_KEYS, type BoardStates, type BoardTries } from "../lib/types";
 import { boardPoints } from "../lib/scoring";
+import { Minus, Plus } from "lucide-react";
 
 type Props = {
   states: BoardStates;
@@ -28,7 +29,7 @@ export default function BoardToggleGroup({ states, tries, onToggle, onAdjustTrie
           <div
             key={key}
             className={`rounded-2xl border px-3 py-3 text-sm transition ${
-              states[key] ? "border-moss-500 bg-moss-500/10" : "border-mint-300 bg-mint-50"
+              states[key] ? "border-moss-500/80 bg-accent-500/12" : "border-mint-300 bg-mint-50"
             }`}
           >
             <div className="flex items-center justify-between">
@@ -36,7 +37,7 @@ export default function BoardToggleGroup({ states, tries, onToggle, onAdjustTrie
                 type="button"
                 aria-pressed={states[key]}
                 className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                  states[key] ? "bg-moss-500 text-white" : "bg-white text-ink-700"
+                  states[key] ? "bg-moss-500 text-night" : "bg-mint-100 text-ink-700"
                 }`}
                 onClick={() => onToggle(key)}
               >
@@ -52,17 +53,19 @@ export default function BoardToggleGroup({ states, tries, onToggle, onAdjustTrie
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="h-8 w-8 rounded-full border border-mint-300 bg-white text-base"
+                  className="h-8 w-8 rounded-full border border-mint-300 bg-mint-100 text-base"
                   onClick={() => onAdjustTries(key, -1)}
+                  aria-label={`${key}のトライ数を減らす`}
                 >
-                  −
+                  <Minus aria-hidden="true" className="mx-auto h-3.5 w-3.5" strokeWidth={2.2} />
                 </button>
                 <button
                   type="button"
-                  className="h-8 w-8 rounded-full border border-mint-300 bg-white text-base"
+                  className="h-8 w-8 rounded-full border border-mint-300 bg-mint-100 text-base"
                   onClick={() => onAdjustTries(key, 1)}
+                  aria-label={`${key}のトライ数を増やす`}
                 >
-                  ＋
+                  <Plus aria-hidden="true" className="mx-auto h-3.5 w-3.5" strokeWidth={2.2} />
                 </button>
               </div>
             </div>
