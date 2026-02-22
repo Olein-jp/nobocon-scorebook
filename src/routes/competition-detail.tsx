@@ -194,7 +194,11 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
     <div className="mt-6 space-y-4">
       {summary && summary.totalPoints > 0 && (
         <div className="rounded-2xl border border-mint-300/70 bg-mint-100/80 px-4 py-2 text-center text-xs font-semibold text-ink-700">
-          今のスコア（{summary.totalPoints}pt）ならランク{summary.rank}獲得
+          今のスコア（{summary.totalPoints}pt）ならランク
+          <span className="mx-1 text-moss-600" style={{ fontSize: "150%" }}>
+            {summary.rank}
+          </span>
+          獲得
         </div>
       )}
       <div className="flex items-center justify-between">
