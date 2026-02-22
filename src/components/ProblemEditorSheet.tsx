@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { Minus, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { GRADE_OPTIONS, type ProblemAttempt } from "../lib/types";
 import { validateProblem } from "../lib/validators";
 
@@ -15,7 +14,7 @@ type Props = {
 const defaultForm: ProblemFormInput = {
   label: "",
   grade: "5Q",
-  triesTotal: 0,
+  triesTotal: 1,
   topped: false,
   triesToTop: null,
 };
@@ -23,40 +22,50 @@ const defaultForm: ProblemFormInput = {
 export default function ProblemEditorSheet({ open, initial, onClose, onSave }: Props) {
   const [form, setForm] = useState<ProblemFormInput>(initial ?? defaultForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const labelRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
       setForm(initial ?? defaultForm);
       setErrors({});
+      requestAnimationFrame(() => labelRef.current?.focus());
     }
   }, [open, initial]);
 
-  const triesTotal = useMemo(() => Math.max(0, Number(form.triesTotal) || 0), [form.triesTotal]);
+  const normalizeForm = () => ({
+    ...form,
+    label: form.label.trim(),
+    triesTotal: 1,
+    topped: false,
+    triesToTop: null,
+  });
 
-  useEffect(() => {
-    if (!form.topped) return;
-    const nextTries = triesTotal > 0 ? triesTotal : 1;
-    if (triesTotal === 0) {
-      setForm((prev) => ({ ...prev, triesTotal: nextTries, triesToTop: nextTries }));
-      return;
-    }
-    if (form.triesToTop !== nextTries) {
-      setForm((prev) => ({ ...prev, triesToTop: nextTries }));
-    }
-  }, [form.topped, form.triesToTop, triesTotal]);
+  const resetForNext = () => {
+    setForm((prev) => ({
+      ...defaultForm,
+      grade: prev.grade,
+      label: "",
+    }));
+    setErrors({});
+    requestAnimationFrame(() => labelRef.current?.focus());
+  };
 
   const handleSave = () => {
-    const normalized: ProblemFormInput = {
-      ...form,
-      label: form.label.trim(),
-      triesTotal,
-      triesToTop: form.topped ? (form.triesToTop === null ? null : Number(form.triesToTop)) : null,
-    };
+    const normalized = normalizeForm();
     const validation = validateProblem(normalized);
     setErrors(validation);
     if (Object.keys(validation).length > 0) return;
     onSave(normalized);
     onClose();
+  };
+
+  const handleSaveAndContinue = () => {
+    const normalized = normalizeForm();
+    const validation = validateProblem(normalized);
+    setErrors(validation);
+    if (Object.keys(validation).length > 0) return;
+    onSave(normalized);
+    resetForNext();
   };
 
   if (!open) return null;
@@ -83,6 +92,7 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
                   value={form.label}
                   onChange={(event) => setForm((prev) => ({ ...prev, label: event.target.value }))}
                   placeholder="1"
+                  ref={labelRef}
                 />
               </div>
               <div className="flex-1 min-w-[180px]">
@@ -108,72 +118,24 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
             {errors.label && <p className="mt-2 text-sm text-red-600" aria-live="polite">{errors.label}</p>}
             {errors.grade && <p className="mt-2 text-sm text-red-600" aria-live="polite">{errors.grade}</p>}
           </div>
-
-          <label className="block text-sm font-semibold text-ink-800">トライ数</label>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="h-11 w-11 rounded-full border border-mint-300 bg-mint-50 text-lg"
-              onClick={() => setForm((prev) => ({ ...prev, triesTotal: Math.max(0, triesTotal - 1) }))}
-              aria-label="トライ数を減らす"
-            >
-              <Minus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
-            </button>
-            <input
-              type="number"
-              className="w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2"
-              min={0}
-              value={triesTotal}
-              onChange={(event) => setForm((prev) => ({ ...prev, triesTotal: Number(event.target.value) }))}
-            />
-            <button
-              type="button"
-              className="h-11 w-11 rounded-full border border-mint-300 bg-mint-50 text-lg"
-              onClick={() => setForm((prev) => ({ ...prev, triesTotal: triesTotal + 1 }))}
-              aria-label="トライ数を増やす"
-            >
-              <Plus aria-hidden="true" className="mx-auto h-4 w-4" strokeWidth={2.2} />
-            </button>
-          </div>
-          {errors.triesTotal && <p className="text-sm text-red-600" aria-live="polite">{errors.triesTotal}</p>}
-
-          <div className="flex items-center justify-between rounded-2xl border border-mint-300 bg-mint-50 px-3 py-2">
-            <div>
-              <p className={`text-sm font-semibold ${form.topped ? "text-moss-600" : "text-ink-700"}`}>
-                {form.topped ? "完登登録済み" : "未完登"}
-              </p>
-              <p className="text-xs text-ink-600">
-                {form.topped ? "完登として記録しました" : "タップで完登登録"}
-              </p>
-            </div>
-            <button
-              type="button"
-              className={`rounded-full px-4 py-1 text-sm font-semibold ${
-                form.topped ? "bg-moss-500 text-night" : "bg-mint-100 text-ink-700"
-              }`}
-              aria-pressed={form.topped}
-              onClick={() =>
-                setForm((prev) => ({
-                  ...prev,
-                  topped: !prev.topped,
-                  triesTotal: !prev.topped && triesTotal === 0 ? 1 : prev.triesTotal,
-                  triesToTop: !prev.topped ? (triesTotal > 0 ? triesTotal : 1) : null,
-                }))
-              }
-            >
-              {form.topped ? "完登済み" : "完登登録"}
-            </button>
-          </div>
-          {errors.triesToTop && <p className="text-sm text-red-600" aria-live="polite">{errors.triesToTop}</p>}
         </div>
 
-        <button
-          type="button"
-          className="mt-6 w-full rounded-2xl bg-accent-500 px-4 py-3 text-base font-semibold text-night transition hover:bg-accent-600"
-          onClick={handleSave}
-        >
-          保存
-        </button>
+        <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            className="flex-1 rounded-2xl bg-accent-500 px-4 py-3 text-base font-semibold text-night transition hover:bg-accent-600"
+            onClick={handleSave}
+          >
+            追加する
+          </button>
+          <button
+            type="button"
+            className="flex-1 rounded-2xl border border-mint-300 bg-mint-50 px-4 py-3 text-base font-semibold text-ink-800"
+            onClick={handleSaveAndContinue}
+          >
+            続けて追加する
+          </button>
+        </div>
       </div>
     </div>
   );

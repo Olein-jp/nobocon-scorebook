@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeftRight, Minus, Plus } from "lucide-react";
+import { Minus, Plus, X } from "lucide-react";
 import Tabs from "../components/Tabs";
 import ProblemEditorSheet, { type ProblemFormInput } from "../components/ProblemEditorSheet";
 import BoardToggleGroup from "../components/BoardToggleGroup";
@@ -65,14 +65,14 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   const competition = state.competitions.find((item) => item.id === id);
 
   const [activeTab, setActiveTab] = useState("problems");
-  const [problemEditMode, setProblemEditMode] = useState(false);
   const [metaEditMode, setMetaEditMode] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [editingProblem, setEditingProblem] = useState<ProblemAttempt | null>(null);
   const [metaTitle, setMetaTitle] = useState(competition?.title ?? "");
   const [metaDate, setMetaDate] = useState(competition?.eventDate ?? todayString());
   const [metaErrors, setMetaErrors] = useState<Record<string, string>>({});
   const [importError, setImportError] = useState<string | null>(null);
+  const [undoInfo, setUndoInfo] = useState<ProblemAttempt | null>(null);
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scoreCardRef = useRef<HTMLDivElement>(null);
 
   const summary = useMemo(() => (competition ? calculateScore(competition) : null), [competition]);
@@ -106,26 +106,27 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   };
 
   const handleAddProblem = () => {
-    setEditingProblem(null);
-    setSheetOpen(true);
-  };
-
-  const handleEditProblem = (problem: ProblemAttempt) => {
-    setEditingProblem(problem);
     setSheetOpen(true);
   };
 
   const handleSaveProblem = (payload: ProblemFormInput) => {
-    if (editingProblem) {
-      actions.updateProblem(competition.id, editingProblem.id, payload);
-    } else {
-      actions.addProblem(competition.id, payload);
-    }
+    actions.addProblem(competition.id, payload);
   };
 
   const handleDeleteProblem = (problemId: string) => {
     if (!window.confirm("この課題を削除しますか？")) return;
+    const target = competition.problems.find((problem) => problem.id === problemId);
     actions.deleteProblem(competition.id, problemId);
+    if (target) {
+      setUndoInfo(target);
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current);
+      }
+      undoTimerRef.current = setTimeout(() => {
+        setUndoInfo(null);
+        undoTimerRef.current = null;
+      }, 5000);
+    }
   };
 
   const adjustProblemTries = (problem: ProblemAttempt, delta: number) => {
@@ -135,6 +136,32 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
       triesTotal: nextTries,
       triesToTop: problem.topped ? nextTries : null,
     });
+  };
+
+  const toggleProblemTopped = (problem: ProblemAttempt) => {
+    const nextTopped = !problem.topped;
+    const nextTries = Math.max(nextTopped ? 1 : 0, problem.triesTotal);
+    actions.updateProblem(competition.id, problem.id, {
+      topped: nextTopped,
+      triesTotal: nextTries,
+      triesToTop: nextTopped ? nextTries : null,
+    });
+  };
+
+  const handleUndoDelete = () => {
+    if (!undoInfo) return;
+    actions.addProblem(competition.id, {
+      label: undoInfo.label,
+      grade: undoInfo.grade,
+      triesTotal: undoInfo.triesTotal,
+      topped: undoInfo.topped,
+      triesToTop: undoInfo.triesToTop,
+    });
+    setUndoInfo(null);
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+      undoTimerRef.current = null;
+    }
   };
 
   const handleExportPng = async () => {
@@ -165,55 +192,75 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
   const problemTab = (
     <div className="mt-6 space-y-4">
+      {summary && summary.totalPoints > 0 && (
+        <div className="rounded-2xl border border-mint-300/70 bg-mint-100/80 px-4 py-2 text-center text-xs font-semibold text-ink-700">
+          今のスコア（{summary.totalPoints}pt）ならランク{summary.rank}獲得
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold text-ink-950">課題一覧</h2>
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-full border border-mint-300 bg-mint-50 px-3 py-1 text-xs font-semibold text-ink-800"
-            onClick={() => setProblemEditMode((prev) => !prev)}
+            className="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-night"
+            onClick={handleAddProblem}
           >
-            <ArrowLeftRight aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2} />
-            {problemEditMode ? "閲覧へ切替" : "編集へ切替"}
+            ＋ 課題追加
           </button>
-          {problemEditMode && (
-            <button
-              type="button"
-              className="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-night"
-              onClick={handleAddProblem}
-            >
-              ＋ 課題追加
-            </button>
-          )}
         </div>
       </div>
 
       <div className="space-y-3">
         {competition.problems.length === 0 && (
           <div className="rounded-2xl border border-dashed border-mint-500/60 bg-mint-100/70 p-4 text-sm text-ink-700">
-            まだ課題がありません。編集モードで追加してください。
+            まだ課題がありません。「課題追加」から追加してください。
           </div>
         )}
 
         {competition.problems.map((problem) => (
-          <div key={problem.id} className="soft-card p-4">
-            <div className="flex items-center justify-between">
+          <div key={problem.id} className="soft-card relative p-4">
+            <button
+              type="button"
+              className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-400/55 bg-mint-100 text-red-300"
+              onClick={() => handleDeleteProblem(problem.id)}
+              aria-label="課題を削除"
+            >
+              <X aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2} />
+            </button>
+            <div className="flex items-center justify-between pr-8">
               <div>
                 <p className="text-sm font-semibold text-ink-900">
                   <span className="text-moss-600">{problem.grade}</span> - {problem.label}
                 </p>
+                <p className="mt-1 text-xs text-ink-600">
+                  獲得ポイント: {problem.topped ? gradePoints[problem.grade] : 0}
+                </p>
               </div>
-              <div className="text-right text-xs text-ink-600">
-                <p
-                  className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
+              <div className="flex items-center justify-end gap-2 text-right text-xs text-ink-600">
+                <button
+                  type="button"
+                  className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
                     problem.topped
-                      ? "border-accent-500/80 bg-accent-500 text-night"
+                      ? "border-accent-500/80 bg-accent-500 text-night shadow-[0_0_0_2px_rgba(203,255,79,0.18)]"
                       : "border-mint-300 bg-mint-50 text-ink-700"
                   }`}
+                  onClick={() => toggleProblemTopped(problem)}
+                  aria-pressed={problem.topped}
                 >
-                  {problem.topped ? "完登済み" : "未完登"}
-                </p>
-                <p>獲得ポイント: {problem.topped ? gradePoints[problem.grade] : 0}</p>
+                  完登済み
+                </button>
+                <button
+                  type="button"
+                  className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                    problem.topped
+                      ? "border-mint-300 bg-mint-50 text-ink-700"
+                      : "border-line-soft bg-mint-100 text-ink-600 shadow-[0_0_0_2px_rgba(78,90,112,0.2)]"
+                  }`}
+                  onClick={() => toggleProblemTopped(problem)}
+                  aria-pressed={!problem.topped}
+                >
+                  未完登
+                </button>
               </div>
             </div>
 
@@ -241,25 +288,6 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
                 </button>
               </div>
             </div>
-
-            {problemEditMode && (
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  className="flex-1 rounded-full border border-mint-300 bg-mint-50 px-3 py-2 text-xs font-semibold text-ink-800"
-                  onClick={() => handleEditProblem(problem)}
-                >
-                  編集
-                </button>
-                <button
-                  type="button"
-                  className="flex-1 rounded-full border border-red-200 px-3 py-2 text-xs font-semibold text-red-600"
-                  onClick={() => handleDeleteProblem(problem.id)}
-                >
-                  削除
-                </button>
-              </div>
-            )}
           </div>
         ))}
       </div>
@@ -407,12 +435,21 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
       <Tabs
         items={[
-          { id: "problems", label: "課題", content: problemTab },
-          { id: "score", label: "スコア", content: scoreTab },
+          {
+            id: "problems",
+            label: "課題",
+            content: problemTab,
+          },
+          {
+            id: "score",
+            label: "スコア",
+            content: scoreTab,
+          },
         ]}
         activeId={activeTab}
         onChange={setActiveTab}
       />
+
 
       <div className="mt-8">
         <button
@@ -426,20 +463,22 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
       <ProblemEditorSheet
         open={sheetOpen}
-        initial={
-          editingProblem
-            ? {
-                label: editingProblem.label,
-                grade: editingProblem.grade,
-                triesTotal: editingProblem.triesTotal,
-                topped: editingProblem.topped,
-                triesToTop: editingProblem.triesToTop,
-              }
-            : undefined
-        }
         onClose={() => setSheetOpen(false)}
         onSave={handleSaveProblem}
       />
+
+      {undoInfo && (
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-2xl border border-mint-300/85 bg-mint-100 px-4 py-3 text-sm text-ink-800 shadow-card">
+          <span>課題を削除しました</span>
+          <button
+            type="button"
+            className="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-night"
+            onClick={handleUndoDelete}
+          >
+            元に戻す
+          </button>
+        </div>
+      )}
     </div>
   );
 }
