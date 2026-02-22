@@ -6,15 +6,17 @@ const formatDate = (value: string) => value || "日付未設定";
 
 export default function HomeRoute({ state }: { state: AppState }) {
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-24 pt-6">
-      <header className="flex items-center justify-between gap-3">
+    <div className="mx-auto max-w-5xl px-4 pb-24 pt-8">
+      <header className="flex items-center justify-between gap-3 border-b border-mint-300/80 pb-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-ink-600">Nobocon Scorebook</p>
-          <h1 className="mt-1 font-display text-2xl text-ink-950">コンペ一覧</h1>
+          <p className="font-display text-[0.72rem] uppercase leading-[1.2] tracking-[0.45em] text-ink-600">
+            <span className="block">Nobocon</span>
+            <span className="mt-1 block">Scorebook</span>
+          </p>
         </div>
         <Link
           to="/competitions/new"
-          className="rounded-full bg-accent-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-600"
+          className="accent-button text-sm"
         >
           ＋ 新規作成
         </Link>
@@ -22,7 +24,7 @@ export default function HomeRoute({ state }: { state: AppState }) {
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {state.competitions.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-mint-500/60 bg-white/80 p-6 text-sm text-ink-700">
+          <div className="rounded-3xl border border-dashed border-mint-500/60 bg-mint-100/70 p-6 text-sm text-ink-700">
             まだコンペがありません。「＋ 新規作成」から開始してください。
           </div>
         )}
@@ -33,7 +35,7 @@ export default function HomeRoute({ state }: { state: AppState }) {
             <Link
               key={competition.id}
               to={`/competitions/${competition.id}`}
-              className="group soft-card p-5 transition hover:-translate-y-1 hover:border-accent-500/35"
+              className="group soft-card p-5 transition hover:-translate-y-1 hover:border-accent-500/55"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -45,7 +47,7 @@ export default function HomeRoute({ state }: { state: AppState }) {
                   <p className="text-xl font-bold text-ink-950">{score.totalPoints}</p>
                 </div>
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-2xl bg-mint-50 px-3 py-2 text-sm text-ink-700">
+              <div className="mt-4 flex items-center justify-between rounded-2xl border border-mint-300/85 bg-mint-50 px-3 py-2 text-sm text-ink-700">
                 <span>ランク: {score.rank}</span>
                 <span>トライ数: {score.totalTries}</span>
               </div>

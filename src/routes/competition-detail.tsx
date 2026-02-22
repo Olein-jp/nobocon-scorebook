@@ -177,7 +177,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           {problemEditMode && (
             <button
               type="button"
-              className="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-white"
+              className="rounded-full bg-accent-500 px-3 py-1 text-xs font-semibold text-night"
               onClick={handleAddProblem}
             >
               ＋ 課題追加
@@ -196,7 +196,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
       <div className="space-y-3">
         {competition.problems.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-mint-500/60 bg-white/80 p-4 text-sm text-ink-700">
+          <div className="rounded-2xl border border-dashed border-mint-500/60 bg-mint-100/70 p-4 text-sm text-ink-700">
             まだ課題がありません。編集モードで追加してください。
           </div>
         )}
@@ -222,14 +222,14 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="h-10 w-10 rounded-full border border-mint-300 bg-white text-lg"
+                  className="h-10 w-10 rounded-full border border-mint-300 bg-mint-100 text-lg"
                   onClick={() => adjustProblemTries(problem, -1)}
                 >
                   −
                 </button>
                 <button
                   type="button"
-                  className="h-10 w-10 rounded-full border border-mint-300 bg-white text-lg"
+                  className="h-10 w-10 rounded-full border border-mint-300 bg-mint-100 text-lg"
                   onClick={() => adjustProblemTries(problem, 1)}
                 >
                   ＋
@@ -293,7 +293,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           </div>
           <button
             type="button"
-            className="rounded-full bg-accent-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
+            className="rounded-full bg-accent-500 px-3 py-2 text-xs font-semibold text-night transition hover:bg-accent-600"
             onClick={handleExportPng}
           >
             画像として保存
@@ -327,8 +327,8 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-24 pt-6">
-      <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="mx-auto max-w-5xl px-4 pb-24 pt-8">
+      <header className="flex flex-col gap-3 border-b border-mint-300/80 pb-4 md:flex-row md:items-center md:justify-between">
         <div>
           <Link to="/" className="text-xs uppercase tracking-[0.35em] text-ink-600">
             ← 一覧へ戻る
@@ -336,13 +336,13 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
           {metaEditMode ? (
             <div className="mt-2 space-y-2">
               <input
-                className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                className="w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2 text-base"
                 value={metaTitle}
                 onChange={(event) => setMetaTitle(event.target.value)}
               />
               <input
                 type="date"
-                className="w-full rounded-xl border border-mint-300 bg-white px-3 py-2 text-base"
+                className="w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2 text-base"
                 value={metaDate}
                 onChange={(event) => setMetaDate(event.target.value)}
               />
@@ -369,7 +369,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
               </button>
               <button
                 type="button"
-                className="rounded-full bg-accent-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent-600"
+                className="rounded-full bg-accent-500 px-4 py-2 text-xs font-semibold text-night transition hover:bg-accent-600"
                 onClick={handleSaveMeta}
               >
                 保存
@@ -403,7 +403,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
       <div className="mt-8">
         <button
           type="button"
-          className="w-full rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600"
+          className="w-full rounded-2xl border border-red-400/55 bg-mint-100 px-4 py-3 text-sm font-semibold text-red-300"
           onClick={handleDeleteCompetition}
         >
           この大会を削除
