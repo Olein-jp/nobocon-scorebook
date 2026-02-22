@@ -28,7 +28,7 @@ export default function HomeRoute({ state }: { state: AppState }) {
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {state.competitions.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-mint-500/60 bg-mint-100/70 p-6 text-sm text-ink-700">
+          <div className="rounded-xl border border-dashed border-mint-500/60 bg-mint-100/70 p-6 text-sm text-ink-700">
             まだコンペがありません。「＋ 新規作成」から開始してください。
           </div>
         )}
@@ -51,7 +51,7 @@ export default function HomeRoute({ state }: { state: AppState }) {
                   <p className="text-xl font-bold text-ink-950">{score.totalPoints}</p>
                 </div>
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-2xl border border-mint-300/85 bg-mint-50 px-3 py-2 text-sm text-ink-700">
+              <div className="mt-4 flex items-center justify-between rounded-xl border border-mint-300/85 bg-mint-50 px-3 py-2 text-sm text-ink-700">
                 <span>ランク: {score.rank}</span>
                 <span>トライ数: {score.totalTries}</span>
               </div>

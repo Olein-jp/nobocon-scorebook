@@ -72,7 +72,7 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-night/70 px-4 pb-6 backdrop-blur-sm">
-      <div className="w-full max-w-xl rounded-3xl border border-mint-300/85 bg-mint-100 p-5 shadow-card">
+      <div className="w-full max-w-xl rounded-xl border border-mint-300/85 bg-mint-100 p-5 shadow-card">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-ink-950">課題を入力</h3>
           <button type="button" className="text-sm text-ink-600" onClick={onClose}>
@@ -81,7 +81,7 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
         </div>
 
         <div className="mt-4 space-y-3">
-          <div className="rounded-2xl border border-mint-300 bg-mint-50 p-3">
+          <div className="rounded-xl border border-mint-300 bg-mint-50 p-3">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex-1 min-w-[140px]">
                 <label className="block text-sm font-semibold text-ink-800">課題番号</label>
@@ -123,14 +123,14 @@ export default function ProblemEditorSheet({ open, initial, onClose, onSave }: P
         <div className="mt-6 flex flex-col gap-2 sm:flex-row">
           <button
             type="button"
-            className="flex-1 rounded-2xl bg-accent-500 px-4 py-3 text-base font-semibold text-night transition hover:bg-accent-600"
+            className="flex-1 rounded-xl bg-accent-500 px-4 py-3 text-base font-semibold text-night transition hover:bg-accent-600"
             onClick={handleSave}
           >
             追加する
           </button>
           <button
             type="button"
-            className="flex-1 rounded-2xl border border-mint-300 bg-mint-50 px-4 py-3 text-base font-semibold text-ink-800"
+            className="flex-1 rounded-xl border border-mint-300 bg-mint-50 px-4 py-3 text-base font-semibold text-ink-800"
             onClick={handleSaveAndContinue}
           >
             続けて追加する

@@ -259,7 +259,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
     <div className="mt-6 space-y-4">
       {summary && summary.totalPoints > 0 && (
         <div className="space-y-2">
-          <div className="rounded-2xl border border-mint-300/70 bg-mint-100/80 px-4 py-2 text-center text-xs font-semibold text-ink-700">
+          <div className="rounded-xl border border-mint-300/70 bg-mint-100/80 px-4 py-2 text-center text-xs font-semibold text-ink-700">
             今のスコア（{summary.totalPoints}pt）ならランク
             <span className="mx-1 text-moss-600" style={{ fontSize: "150%" }}>
               {summary.rank}
@@ -267,7 +267,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
             獲得
           </div>
           {competition.participationClass !== "general" && summary.autoTopPointsTotal > 0 && (
-            <p className="rounded-2xl border border-mint-300/70 bg-mint-50 px-4 py-2 text-center text-xs text-ink-700">
+            <p className="rounded-xl border border-mint-300/70 bg-mint-50 px-4 py-2 text-center text-xs text-ink-700">
               {classLabel[competition.participationClass]}で参加しているため、
               {classAutoTopHeadline[competition.participationClass]}を全完したポイント（{summary.autoTopPointsTotal}pt）が
               すでに追加されています。
@@ -290,7 +290,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
 
       <div className="space-y-3">
         {competition.problems.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-mint-500/60 bg-mint-100/70 p-4 text-sm text-ink-700">
+          <div className="rounded-xl border border-dashed border-mint-500/60 bg-mint-100/70 p-4 text-sm text-ink-700">
             まだ課題がありません。「課題追加」から追加してください。
           </div>
         )}
@@ -345,7 +345,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
               </button>
             </div>
 
-            <div className="mt-3 flex items-center justify-between rounded-2xl border border-mint-300 bg-mint-50 px-3 py-2">
+            <div className="mt-3 flex items-center justify-between rounded-xl border border-mint-300 bg-mint-50 px-3 py-2">
               <div>
                 <p className="text-xs text-ink-600">トライ数</p>
                 <p className="text-lg font-semibold text-ink-900">{problem.triesTotal}</p>
@@ -475,7 +475,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
                 value={metaDate}
                 onChange={(event) => setMetaDate(event.target.value)}
               />
-              <div className="rounded-2xl border border-mint-300 bg-mint-50 p-3">
+              <div className="rounded-xl border border-mint-300 bg-mint-50 p-3">
                 <p className="text-xs font-semibold text-ink-700">参加枠</p>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3">
                   {PARTICIPATION_CLASSES.map((cls) => (
@@ -594,7 +594,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
       <div className="mt-8">
         <button
           type="button"
-          className="w-full rounded-2xl border border-red-400/55 bg-mint-100 px-4 py-3 text-sm font-semibold text-red-300"
+          className="w-full rounded-xl border border-red-400/55 bg-mint-100 px-4 py-3 text-sm font-semibold text-red-300"
           onClick={handleDeleteCompetition}
         >
           この大会を削除
@@ -608,7 +608,7 @@ export default function CompetitionDetailRoute({ state, actions }: { state: AppS
       />
 
       {undoInfo && (
-        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-2xl border border-mint-300/85 bg-mint-100 px-4 py-3 text-sm text-ink-800 shadow-card">
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-mint-300/85 bg-mint-100 px-4 py-3 text-sm text-ink-800 shadow-card">
           <span>課題を削除しました</span>
           <button
             type="button"

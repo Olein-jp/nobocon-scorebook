@@ -28,7 +28,7 @@ export default function BoardToggleGroup({ states, tries, onToggle, onAdjustTrie
         {BOARD_KEYS.map((key) => (
           <div
             key={key}
-            className={`rounded-2xl border px-3 py-3 text-sm transition ${
+            className={`rounded-xl border px-3 py-3 text-sm transition ${
               states[key] ? "border-moss-500/80 bg-accent-500/12" : "border-mint-300 bg-mint-50"
             }`}
           >

@@ -79,7 +79,7 @@ export default function CompetitionNewRoute({ actions }: { actions: Actions }) {
         <div className="soft-card p-4">
           <label className="text-sm font-semibold text-ink-800">大会名</label>
           <input
-            className="mt-2 w-full rounded-2xl border border-mint-300 bg-mint-50 px-3 py-2 text-base placeholder:text-ink-600"
+            className="mt-2 w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2 text-base placeholder:text-ink-600"
             placeholder="のぼコン 2026-02"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -91,7 +91,7 @@ export default function CompetitionNewRoute({ actions }: { actions: Actions }) {
           <label className="text-sm font-semibold text-ink-800">開催日</label>
           <input
             type="date"
-            className="mt-2 w-full rounded-2xl border border-mint-300 bg-mint-50 px-3 py-2 text-base"
+            className="mt-2 w-full rounded-xl border border-mint-300 bg-mint-50 px-3 py-2 text-base"
             value={eventDate}
             onChange={(event) => setEventDate(event.target.value)}
           />
@@ -104,7 +104,7 @@ export default function CompetitionNewRoute({ actions }: { actions: Actions }) {
               <button
                 key={cls}
                 type="button"
-                className={`rounded-2xl border px-3 py-2 text-sm font-semibold transition ${
+                className={`rounded-xl border px-3 py-2 text-sm font-semibold transition ${
                   participationClass === cls
                     ? "border-accent-500 bg-accent-500 text-night"
                     : "border-mint-300 bg-mint-50 text-ink-800"
@@ -118,7 +118,7 @@ export default function CompetitionNewRoute({ actions }: { actions: Actions }) {
           </div>
 
           {autoTopGrades.length > 0 && (
-            <div className="mt-4 space-y-2 rounded-2xl border border-mint-300 bg-mint-50 p-3">
+            <div className="mt-4 space-y-2 rounded-xl border border-mint-300 bg-mint-50 p-3">
               <p className="text-xs text-ink-600">
                 {participationClass === "advance"
                   ? "4Q以下（4Q〜8Q）の課題数を入力してください。"
@@ -156,7 +156,7 @@ export default function CompetitionNewRoute({ actions }: { actions: Actions }) {
 
         <button
           type="submit"
-          className="mt-6 w-full rounded-2xl bg-accent-500 px-4 py-3 text-base font-semibold text-night transition hover:bg-accent-600"
+          className="mt-6 w-full rounded-xl bg-accent-500 px-4 py-3 text-base font-semibold text-night transition hover:bg-accent-600"
         >
           保存して開始
         </button>

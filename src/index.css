@@ -58,7 +58,7 @@ select {
 
 @layer components {
   .soft-card {
-    @apply rounded-3xl border border-mint-300 bg-mint-100 shadow-card backdrop-blur-sm;
+    @apply rounded-xl border border-mint-300 bg-mint-100 shadow-card backdrop-blur-sm;
   }
 
   .accent-button {
