@@ -1,4 +1,11 @@
-import { BOARD_KEYS, GRADE_OPTIONS, type Competition, type Grade, type ScoreSummary } from "./types";
+import {
+  AUTO_TOP_GRADES_BY_CLASS,
+  BOARD_KEYS,
+  GRADE_OPTIONS,
+  type Competition,
+  type Grade,
+  type ScoreSummary,
+} from "./types";
 
 export const gradePoints: Record<Grade, number> = {
   "8Q": 100,
@@ -50,11 +57,26 @@ export const calculateScore = (competition: Competition): ScoreSummary => {
     acc[grade] = 0;
     return acc;
   }, {} as Record<Grade, number>);
+  const autoTopGradeTotals = GRADE_OPTIONS.reduce((acc, grade) => {
+    acc[grade] = 0;
+    return acc;
+  }, {} as Record<Grade, number>);
 
   const toppedProblems = competition.problems.filter((problem) => problem.topped);
   for (const problem of toppedProblems) {
     gradeTotals[problem.grade] += 1;
   }
+
+  const autoTopGrades = AUTO_TOP_GRADES_BY_CLASS[competition.participationClass] ?? [];
+  for (const grade of autoTopGrades) {
+    const count = Math.max(0, Math.floor(competition.autoTopCounts?.[grade] ?? 0));
+    autoTopGradeTotals[grade] = count;
+    gradeTotals[grade] += count;
+  }
+
+  const autoTopPointsTotal = GRADE_OPTIONS.reduce((sum, grade) => {
+    return sum + autoTopGradeTotals[grade] * gradePoints[grade];
+  }, 0);
 
   const gradePointsTotal = GRADE_OPTIONS.reduce((sum, grade) => {
     return sum + gradeTotals[grade] * gradePoints[grade];
@@ -76,6 +98,8 @@ export const calculateScore = (competition: Competition): ScoreSummary => {
 
   return {
     gradeTotals,
+    autoTopGradeTotals,
+    autoTopPointsTotal,
     gradePointsTotal,
     boardPointsTotal,
     boardTriesTotal,
@@ -83,6 +107,7 @@ export const calculateScore = (competition: Competition): ScoreSummary => {
     rank: getRankLabel(totalPoints),
     totalTries,
     pointsPerTry,
+    totalToppedCount: toppedProblems.length + autoTopGrades.reduce((sum, grade) => sum + autoTopGradeTotals[grade], 0),
     toppedProblems,
   };
 };

@@ -3,6 +3,15 @@ import type { Competition, ScoreSummary } from "../lib/types";
 import { gradePoints } from "../lib/scoring";
 
 const formatNumber = (value: number) => new Intl.NumberFormat("ja-JP").format(value);
+const classLabel = {
+  general: "一般",
+  advance: "アドバンスクラス",
+  master: "マスタークラス",
+} as const;
+const classHeadline = {
+  advance: "4Q以下",
+  master: "3Q以下",
+} as const;
 
 const ScoreCard = forwardRef<HTMLDivElement, { competition: Competition; summary: ScoreSummary }>(({ competition, summary }, ref) => {
   return (
@@ -37,6 +46,13 @@ const ScoreCard = forwardRef<HTMLDivElement, { competition: Competition; summary
 
       <div className="mt-4">
         <p className="text-sm font-semibold">完登課題</p>
+        {competition.participationClass !== "general" && summary.autoTopPointsTotal > 0 && (
+          <p className="mt-2 rounded-xl border border-mint-300 bg-mint-50 px-3 py-2 text-xs text-ink-700">
+            {classLabel[competition.participationClass]}参加のため、
+            {classHeadline[competition.participationClass]}全完扱いの
+            {formatNumber(summary.autoTopPointsTotal)}ptを加点済み
+          </p>
+        )}
         {summary.toppedProblems.length === 0 ? (
           <p className="mt-2 text-sm text-ink-600">完登はまだありません。</p>
         ) : (

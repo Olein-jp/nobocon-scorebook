@@ -4,11 +4,15 @@ import HomeRoute from "./routes/home";
 import CompetitionNewRoute from "./routes/competition-new";
 import CompetitionDetailRoute from "./routes/competition-detail";
 import {
+  AUTO_TOP_GRADES_BY_CLASS,
   BOARD_KEYS,
+  GRADE_OPTIONS,
   type AppState,
+  type AutoTopCounts,
   type BoardStates,
   type BoardTries,
   type Competition,
+  type ParticipationClass,
   type ProblemAttempt,
 } from "./lib/types";
 import { canUseStorage, loadState, saveState } from "./lib/storage";
@@ -26,6 +30,41 @@ const defaultBoardTries = (): BoardTries =>
     return acc;
   }, {} as BoardTries);
 
+const defaultAutoTopCounts = (): AutoTopCounts =>
+  GRADE_OPTIONS.reduce((acc, grade) => {
+    acc[grade] = 0;
+    return acc;
+  }, {} as AutoTopCounts);
+
+const normalizeAutoTopCounts = (counts?: Partial<Record<(typeof GRADE_OPTIONS)[number], number>>): AutoTopCounts =>
+  GRADE_OPTIONS.reduce((acc, grade) => {
+    acc[grade] = Math.max(0, Math.floor(counts?.[grade] ?? 0));
+    return acc;
+  }, {} as AutoTopCounts);
+
+const normalizeParticipationClass = (value?: string): ParticipationClass => {
+  if (value === "advance" || value === "master") return value;
+  return "general";
+};
+
+const sanitizeCompetition = (competition: Competition): Competition => {
+  const participationClass = normalizeParticipationClass(competition.participationClass);
+  const allowedGrades = new Set(AUTO_TOP_GRADES_BY_CLASS[participationClass]);
+  const normalizedCounts = normalizeAutoTopCounts(competition.autoTopCounts);
+  const autoTopCounts = GRADE_OPTIONS.reduce((acc, grade) => {
+    acc[grade] = allowedGrades.has(grade) ? normalizedCounts[grade] : 0;
+    return acc;
+  }, {} as AutoTopCounts);
+
+  return {
+    ...competition,
+    participationClass,
+    autoTopCounts,
+    boardStates: competition.boardStates ?? defaultBoardStates(),
+    boardTries: competition.boardTries ?? defaultBoardTries(),
+  };
+};
+
 const nowIso = () => new Date().toISOString();
 
 const createEmptyState = (): AppState => ({
@@ -39,20 +78,34 @@ const initState = (): AppState => {
   const loaded = loadState();
   if (!loaded) return createEmptyState();
   if (!loaded.version || !Array.isArray(loaded.competitions)) return createEmptyState();
-  const competitions = loaded.competitions.map((competition) => ({
-    ...competition,
-    boardStates: competition.boardStates ?? defaultBoardStates(),
-    boardTries: competition.boardTries ?? defaultBoardTries(),
-  }));
+  const competitions = loaded.competitions.map((competition) =>
+    sanitizeCompetition({
+      ...competition,
+      participationClass: competition.participationClass ?? "general",
+      autoTopCounts: competition.autoTopCounts ?? defaultAutoTopCounts(),
+    })
+  );
   return { ...loaded, competitions };
 };
 
-const buildCompetition = (title: string, eventDate: string): Competition => {
+const buildCompetition = (
+  title: string,
+  eventDate: string,
+  participationClass: ParticipationClass,
+  autoTopCounts: AutoTopCounts
+): Competition => {
   const timestamp = nowIso();
+  const allowedGrades = new Set(AUTO_TOP_GRADES_BY_CLASS[participationClass]);
+  const normalizedCounts = normalizeAutoTopCounts(autoTopCounts);
   return {
     id: `cmp_${uuid()}`,
     title,
     eventDate,
+    participationClass,
+    autoTopCounts: GRADE_OPTIONS.reduce((acc, grade) => {
+      acc[grade] = allowedGrades.has(grade) ? normalizedCounts[grade] : 0;
+      return acc;
+    }, {} as AutoTopCounts),
     problems: [],
     boardStates: defaultBoardStates(),
     boardTries: defaultBoardTries(),
@@ -86,24 +139,36 @@ function App() {
 
   const actions = useMemo(
     () => ({
-      createCompetition: (title: string, eventDate: string) => {
-        const competition = buildCompetition(title, eventDate);
+      createCompetition: (
+        title: string,
+        eventDate: string,
+        participationClass: ParticipationClass,
+        autoTopCounts: AutoTopCounts
+      ) => {
+        const competition = buildCompetition(title, eventDate, participationClass, autoTopCounts);
         updateState((prev) => ({
           ...prev,
           competitions: [...prev.competitions, competition],
         }));
         return competition.id;
       },
-      updateCompetitionMeta: (id: string, updates: Partial<Pick<Competition, "title" | "eventDate">>) => {
+      updateCompetitionMeta: (
+        id: string,
+        updates: Partial<Pick<Competition, "title" | "eventDate" | "participationClass" | "autoTopCounts">>
+      ) => {
         updateState((prev) => ({
           ...prev,
           competitions: prev.competitions.map((competition) =>
             competition.id === id
-              ? {
+              ? sanitizeCompetition({
                   ...competition,
                   ...updates,
+                  participationClass: normalizeParticipationClass(
+                    updates.participationClass ?? competition.participationClass
+                  ),
+                  autoTopCounts: updates.autoTopCounts ?? competition.autoTopCounts,
                   updatedAt: nowIso(),
-                }
+                })
               : competition
           ),
         }));
@@ -235,8 +300,18 @@ function App() {
         }));
       },
       hydrateState: (nextState: AppState) => {
-        setState(nextState);
-        saveState(nextState);
+        const normalizedState = {
+          ...nextState,
+          competitions: nextState.competitions.map((competition) =>
+            sanitizeCompetition({
+              ...competition,
+              participationClass: competition.participationClass ?? "general",
+              autoTopCounts: competition.autoTopCounts ?? defaultAutoTopCounts(),
+            })
+          ),
+        };
+        setState(normalizedState);
+        saveState(normalizedState);
       },
     }),
     []
